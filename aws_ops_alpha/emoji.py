@@ -16,13 +16,15 @@ class Emoji:
 
     relax = "🌴"
 
+    # ci/cd action
     doc = "📔"
     test = "🧪"
     install = "💾"
-    build = "🪜"
+    build = "🏗"
+    fix = "🛠"
     deploy = "🚀"
     delete = "🗑"
-    config = "🔯"
+    config = "⚙"
     tada = "🎉"
 
     cloudformation = "🐑"
@@ -37,6 +39,18 @@ class Emoji:
     no_entry = "🚫"
     warning = "❗"
     label = "🏷"
+
+    # object
+    shield = "🛡"
+    ladder = "🪜"
+    link = "🔗"
+    screwdriver = "🪛"
+    lock = "🔐"
+    key = "🔑"
+    pushpin = "📌"
+    microscope = "🔬"
+    bloom = "🧹"
+    fire_extinguisher = "🧯"
 
     thumb_up = "👍"
     thumb_down = "👎"
@@ -67,10 +81,22 @@ class Emoji:
 
     python = "🐍"
 
+    # environment
+    devops = "🛠"
+    dev = "💻"
+    sbx = "📦"
+    tst = "🧪"
+    stg = "🎸"
+    prd = "🏭"
+
+    # aws codebuild
     install_phase = "🌱"
     pre_build_phase = "🌿"
     build_phase = "🍀"
     post_build_phase = "🌲"
+
+    # human
+    person = "👨"
 
 
 if __name__ == "__main__":

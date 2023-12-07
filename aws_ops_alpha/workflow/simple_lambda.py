@@ -17,6 +17,8 @@ from ..rule import (
 )
 from ..runtime import RunTimeEnum
 
+from . import simple_python
+
 
 class StepEnum(str, enum.Enum):
     """
@@ -117,17 +119,12 @@ def do_we_deploy_doc(
     This function defines the rule for whether we should deploy the
     documentation website or not.
     """
-    # in CI, we only deploy documentation website from doc branch
-    if is_ci_runtime:
-        return only_execute_on_certain_branch(
-            branch_name=branch_name,
-            flag_and_branches=[(is_doc_branch, SemanticBranchEnum.doc)],
-            action=StepEnum.s04_public_documentation_website,
-            verbose=True,
-        )
-    # always deploy doc on Local
-    else:
-        return True
+    return simple_python.do_we_deploy_doc(
+        is_ci_runtime=is_ci_runtime,
+        branch_name=branch_name,
+        is_doc_branch=is_doc_branch,
+        _action=StepEnum.s04_public_documentation_website,
+    )
 
 
 def do_we_deploy_lambda_layer(
