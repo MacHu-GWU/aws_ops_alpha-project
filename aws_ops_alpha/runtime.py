@@ -178,5 +178,13 @@ class Runtime:
             return RunTimeEnum.LOCAL.value
         return RunTimeEnum.UNKNOWN.value
 
+    @cached_property
+    def local_or_ci(self) -> str:
+        if self.is_ci:
+            return RunTimeEnum.CI.value
+        if self.is_local:
+            return RunTimeEnum.LOCAL.value
+        raise ValueError("Not in local or CI environment")
+
 
 runtime = Runtime()

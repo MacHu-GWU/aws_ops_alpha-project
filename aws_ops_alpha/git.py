@@ -6,6 +6,7 @@ This module implements the Git branch strategy related automation.
 
 import typing as T
 import os
+import enum
 import dataclasses
 from pathlib import Path
 from functools import cached_property
@@ -192,3 +193,32 @@ class GitRepo:
             self.git_branch_name,
             [AwsOpsSemanticBranchEnum.airflow],
         )
+
+
+T_MAPPER = T.Dict[enum.Enum, T.Callable[[str], bool]]
+
+
+def detect_semantic_branch(
+    full_git_branch_name: str,
+    mapper: T_MAPPER,
+) -> str:
+    """
+    For specific type of project, like simple_python, simple_lambda, we have
+    a list of pre-defined semantic branch name, like "main", "feature/*", "app/*".
+
+    Given a full git branch name, we want to detect the corresponding
+    semantic branch name.
+
+    :param full_git_branch_name: the full git branch name, this is the value
+        you see in ``git branch`` command.
+    :param mapper: it is a dictionary that the key is the semantic branch name,
+        and the value is a callable function that will return a boolean value
+        to indicate whether the given full git branch name is the semantic branch.
+
+    :return: the matched semantic branch name.
+    """
+    for git_branch_enum, func in mapper.items():
+        if func(full_git_branch_name):
+            return git_branch_enum.value
+    valid_branches = " | ".join([git_branch_enum.value for git_branch_enum in mapper])
+    raise ValueError(f"{valid_branches}")
