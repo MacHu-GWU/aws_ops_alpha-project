@@ -7,9 +7,11 @@ logger = NestedLogger(
     log_format="%(message)s",
 )
 
+# rich console is optional
 try:
     from rich.console import Console
 
     console = Console()
 except ImportError:  # pragma: no cover
+    # todo: tell user to install rich when user attempt to use console variable
     pass

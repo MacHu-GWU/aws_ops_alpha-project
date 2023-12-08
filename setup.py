@@ -183,6 +183,11 @@ if __name__ == "__main__":
         license=LICENSE,
         install_requires=REQUIRES,
         extras_require=EXTRA_REQUIRE,
+        entry_points={
+            "console_scripts": [
+                "aws_ops_alpha=aws_ops_alpha.cli:main",
+            ],
+        },
     )
 
 """
