@@ -25,21 +25,21 @@ from functools import cached_property
 
 
 class RunTimeEnum(str, enum.Enum):
-    local = "LOCAL"  # local laptop
-    aws_codebuild = "AWS_CODEBUILD"
-    github_action = "GITHUB_ACTION"
-    GITLAB_CI = "GITLAB_CI"
-    BITBUCKET_PIPELINE = "BITBUCKET_PIPELINE"
-    CIRCLECI = "CIRCLECI"
-    JENKINS = "JENKINS"
-    CI = "CI"
-    AWS_LAMBDA = "AWS_LAMBDA"
-    AWS_BATCH = "AWS_BATCH"
-    AWS_GLUE = "AWS_GLUE"
-    AWS_CLOUD9 = "AWS_CLOUD9"
-    AWS_EC2 = "AWS_EC2"
-    AWS_ECS = "AWS_ECS"
-    UNKNOWN = "UNKNOWN"
+    local = "local"  # local laptop
+    aws_codebuild = "aws_codebuild"
+    github_action = "github_action"
+    gitlab_ci = "gitlab_ci"
+    bitbucket_pipeline = "bitbucket_pipeline"
+    circleci = "circleci"
+    jenkins = "jenkins"
+    ci = "ci"
+    aws_lambda = "aws_lambda"
+    aws_batch = "aws_batch"
+    aws_glue = "aws_glue"
+    aws_cloud9 = "aws_cloud9"
+    aws_ec2 = "aws_ec2"
+    aws_ecs = "aws_ecs"
+    unknown = "unknown"
 
 
 class Runtime:
@@ -153,35 +153,35 @@ class Runtime:
         if self.is_github_action:
             return RunTimeEnum.github_action.value
         if self.is_gitlab_ci:
-            return RunTimeEnum.GITLAB_CI.value
+            return RunTimeEnum.gitlab_ci.value
         if self.is_bitbucket_pipeline:
-            return RunTimeEnum.BITBUCKET_PIPELINE.value
+            return RunTimeEnum.bitbucket_pipeline.value
         if self.is_circleci:
-            return RunTimeEnum.CIRCLECI.value
+            return RunTimeEnum.circleci.value
         if self.is_jenkins:
-            return RunTimeEnum.JENKINS.value
+            return RunTimeEnum.jenkins.value
         if self.is_ci:
-            return RunTimeEnum.CI.value
+            return RunTimeEnum.ci.value
         if self.is_aws_lambda:
-            return RunTimeEnum.AWS_LAMBDA.value
+            return RunTimeEnum.aws_lambda.value
         if self.is_aws_batch:
-            return RunTimeEnum.AWS_BATCH.value
+            return RunTimeEnum.aws_batch.value
         if self.is_aws_glue:
-            return RunTimeEnum.AWS_GLUE.value
+            return RunTimeEnum.aws_glue.value
         if self.is_aws_cloud9:
-            return RunTimeEnum.AWS_CLOUD9.value
+            return RunTimeEnum.aws_cloud9.value
         if self.is_aws_ec2:
-            return RunTimeEnum.AWS_EC2.value
+            return RunTimeEnum.aws_ec2.value
         if self.is_aws_ecs:
-            return RunTimeEnum.AWS_ECS.value
+            return RunTimeEnum.aws_ecs.value
         if self.is_local:
             return RunTimeEnum.local.value
-        return RunTimeEnum.UNKNOWN.value
+        return RunTimeEnum.unknown.value
 
     @cached_property
     def local_or_ci(self) -> str:
         if self.is_ci:
-            return RunTimeEnum.CI.value
+            return RunTimeEnum.ci.value
         if self.is_local:
             return RunTimeEnum.local.value
         raise ValueError("Not in local or CI environment")
