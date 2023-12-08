@@ -76,7 +76,6 @@ def grant_layer_permission(
     workload_bsm_list: T.List["BotoSesManager"],
     layer_deployment: aws_lambda_layer.LayerDeployment,
 ):
-    layer_name = layer_deployment.layer_version_arn.split(":")[6]
     for bsm_workload in workload_bsm_list:
         if (bsm_devops.aws_account_id == bsm_workload.aws_account_id) and (
             bsm_devops.aws_region == bsm_workload.aws_region
@@ -84,7 +83,7 @@ def grant_layer_permission(
             continue
         aws_lambda_layer.grant_layer_permission(
             bsm=bsm_devops,
-            layer_name=layer_name,
+            layer_name=layer_deployment.layer_name,
             version_number=layer_deployment.layer_version,
             principal=bsm_workload.aws_account_id,
         )
@@ -102,14 +101,9 @@ def explain_layer_deployment(
         )
     else:
         aws_console = aws_console_url.AWSConsole.from_bsm(bsm=bsm_devops)
-        layer_name = layer_deployment.layer_version_arn.split(":")[6]
         logger.info(f"published a new layer version: {layer_deployment.layer_version}")
         logger.info(f"published layer arn: {layer_deployment.layer_version_arn}")
-        layer_console_url = (
-            f"https://{bsm_devops.aws_region}.console.aws.amazon.com/lambda"
-            f"/home?region={bsm_devops.aws_region}#"
-            f"/layers?fo=and&o0=%3A&v0={layer_name}"
-        )
+        layer_console_url = aws_console.awslambda.filter_layers(layer_deployment.layer_name)
         logger.info(f"preview deployed layer at {layer_console_url}")
         console_url = layer_deployment.s3path_layer_zip.console_url
         logger.info(f"preview layer.zip at {console_url}")

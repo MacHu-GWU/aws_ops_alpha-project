@@ -8,6 +8,8 @@ TST = "tst"
 STG = "stg"
 PRD = "prd"
 
+USER_ENV_NAME = "USER_ENV_NAME"
+
 
 class AwsOpsSemanticBranchEnum(str, enum.Enum):
     lbd = "new"

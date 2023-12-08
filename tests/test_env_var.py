@@ -4,6 +4,7 @@ import os
 from aws_ops_alpha.env_var import (
     get_devops_aws_account_id_in_ci,
     get_workload_aws_account_id_in_ci,
+    temp_env_var,
 )
 
 
@@ -19,6 +20,17 @@ def test_get_workload_aws_account_id_in_ci():
     assert get_workload_aws_account_id_in_ci("tst") == "222222222222"
     os.environ["PRD_AWS_ACCOUNT_ID"] = "333333333333"
     assert get_workload_aws_account_id_in_ci("prd") == "333333333333"
+
+
+def test_temp_env_var():
+    os.environ["TEST_1"] = "a"
+
+    with temp_env_var({"TEST_1": "aaa", "TEST_2": "bbb"}):
+        assert os.environ["TEST_1"] == "aaa"
+        assert os.environ["TEST_2"] == "bbb"
+
+    assert os.environ["TEST_1"] == "a"
+    assert "TEST_2" not in os.environ
 
 
 if __name__ == "__main__":
