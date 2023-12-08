@@ -213,11 +213,16 @@ class RuleSet:
         """
         truth_table_mapper = dict()
         steps: T.Optional[T.List[str]] = None
+        truth_table_steps_fingerprint_list = []
         for truth_table_name in TruthTableNameEnum:
             path_tsv = path_folder / f"{truth_table_name}.tsv"
             truth_table = TruthTable.from_tsv(path_tsv)
             truth_table_mapper[truth_table_name.value] = truth_table
             steps = truth_table.steps
+            truth_table_steps_fingerprint_list.append("----".join(steps))
+
+        if len(set(truth_table_steps_fingerprint_list)) != 1: # pragma: no cover
+            raise ValueError("The steps in all truth tables must be the same.")
 
         return cls(
             path_folder=path_folder,

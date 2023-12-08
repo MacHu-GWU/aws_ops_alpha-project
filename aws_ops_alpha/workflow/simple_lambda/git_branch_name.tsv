@@ -7,6 +7,7 @@ Action👇 git_branch_name 👉	main	feature	fix	doc	layer	app	release	cleanup
 🏗️ Publish Lambda layer	❌	❌	❌	❌	✅	❌	❌	❌
 🚀 Deploy Lambda App via CDK	❌	❌	❌	❌	❌	✅	❌	❌
 🧪 Run Integration Test	❌	❌	❌	❌	❌	✅	❌	❌
+🚀 Publish new Lambda Version	❌	❌	❌	❌	❌	❌	✅	❌
 🔯 Create Config Snapshot	❌	❌	❌	❌	❌	❌	✅	❌
 🏷️ Create Git Tag	❌	❌	❌	❌	❌	❌	✅	❌
 🗑 📦 Delete Lambda App in sbx	❌	❌	❌	❌	❌	❌	❌	✅

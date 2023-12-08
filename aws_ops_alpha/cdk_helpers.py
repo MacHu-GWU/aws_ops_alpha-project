@@ -11,9 +11,9 @@ from pathlib import Path
 
 import aws_console_url.api as aws_console_url
 
+from .vendor.emoji import Emoji
 from .vendor.better_pathlib import temp_cwd
 from .logger import logger
-from .emoji import Emoji
 
 if T.TYPE_CHECKING:
     from boto_session_manager import BotoSesManager

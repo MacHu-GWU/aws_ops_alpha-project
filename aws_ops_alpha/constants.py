@@ -5,6 +5,7 @@ import enum
 DEVOPS = "devops"
 SBX = "sbx"
 TST = "tst"
+STG = "stg"
 PRD = "prd"
 
 
