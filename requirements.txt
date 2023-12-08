@@ -4,3 +4,4 @@ s3pathlib>=2.1.2,<3.0.0
 pyproject_ops>=0.6.1,<1.0.0
 aws_console_url>=1.4.1,<2.0.0
 aws_lambda_layer>=0.5.1,<1.0.0
+config_patterns>=1.0.4,<2.0.0

@@ -1,25 +1,58 @@
 # -*- coding: utf-8 -*-
 
+"""
+Developer note:
+
+    every function in the ``workflow.py`` module should have visualized logging.
+"""
+
+# standard library
 import typing as T
 
+# third party library (include vendor)
 import aws_console_url.api as aws_console_url
-
 from ...vendor.emoji import Emoji
 from ...vendor.aws_lambda_version_and_alias import publish_version
+from ...vendor import semantic_branch as sem_branch
 
+# modules from this project
 from ...logger import logger
+from ...git import detect_semantic_branch
 from ...aws_helpers import aws_lambda_helpers
 
-from .constants import (
-    StepEnum,
-)
+# modules from this submodule
+from .constants import StepEnum, GitBranchNameEnum
 from .rule import rule_set
 
-
+# type hint
 if T.TYPE_CHECKING:
     import pyproject_ops.api as pyops
     from boto_session_manager import BotoSesManager
     from s3pathlib import S3Path
+
+
+def is_layer_branch(name: str) -> bool:
+    return sem_branch.is_certain_semantic_branch(name, ["layer"])
+
+
+def is_app_branch(name: str) -> bool:
+    return sem_branch.is_certain_semantic_branch(name, ["app"])
+
+
+_semantic_branch_mapper = {
+    GitBranchNameEnum.main: sem_branch.is_main_branch,
+    GitBranchNameEnum.feature: sem_branch.is_feature_branch,
+    GitBranchNameEnum.fix: sem_branch.is_fix_branch,
+    GitBranchNameEnum.doc: sem_branch.is_doc_branch,
+    GitBranchNameEnum.layer: is_layer_branch,
+    GitBranchNameEnum.app: is_app_branch,
+    GitBranchNameEnum.release: sem_branch.is_release_branch,
+    GitBranchNameEnum.cleanup: sem_branch.is_cleanup_branch,
+}
+
+
+def _detect_semantic_branch(full_git_branch_name: str) -> str:
+    return detect_semantic_branch(full_git_branch_name, _semantic_branch_mapper)
 
 
 @logger.start_and_end(
@@ -44,7 +77,7 @@ def publish_lambda_layer(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_LAMBDA_LAYER,
-            git_branch_name=git_branch_name,
+            git_branch_name=_detect_semantic_branch(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -90,7 +123,7 @@ def publish_lambda_version(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_NEW_LAMBDA_VERSION,
-            git_branch_name=git_branch_name,
+            git_branch_name=_detect_semantic_branch(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )

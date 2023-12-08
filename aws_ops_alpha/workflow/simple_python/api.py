@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-import aws_ops_alpha.workflow.simple_lambda.api as simple_lambda
+import aws_ops_alpha.workflow.simple_python.api as simple_python
 """
 
 from .constants import StepEnum
