@@ -26,8 +26,9 @@ import string
 import dataclasses
 from pathlib import Path
 
+from ..vendor.emoji import Emoji
+
 from ..logger import logger
-from ..emoji import Emoji
 
 
 # the charset and normalized_text method are used to clean up the invalid characters
