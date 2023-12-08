@@ -25,9 +25,9 @@ from functools import cached_property
 
 
 class RunTimeEnum(str, enum.Enum):
-    LOCAL = "LOCAL"  # local laptop
-    AWS_CODEBUILD = "AWS_CODEBUILD"
-    GITHUB_ACTION = "GITHUB_ACTION"
+    local = "LOCAL"  # local laptop
+    aws_codebuild = "AWS_CODEBUILD"
+    github_action = "GITHUB_ACTION"
     GITLAB_CI = "GITLAB_CI"
     BITBUCKET_PIPELINE = "BITBUCKET_PIPELINE"
     CIRCLECI = "CIRCLECI"
@@ -149,9 +149,9 @@ class Runtime:
         Return the human friendly name of the current runtime.
         """
         if self.is_aws_codebuild:
-            return RunTimeEnum.AWS_CODEBUILD.value
+            return RunTimeEnum.aws_codebuild.value
         if self.is_github_action:
-            return RunTimeEnum.GITHUB_ACTION.value
+            return RunTimeEnum.github_action.value
         if self.is_gitlab_ci:
             return RunTimeEnum.GITLAB_CI.value
         if self.is_bitbucket_pipeline:
@@ -175,7 +175,7 @@ class Runtime:
         if self.is_aws_ecs:
             return RunTimeEnum.AWS_ECS.value
         if self.is_local:
-            return RunTimeEnum.LOCAL.value
+            return RunTimeEnum.local.value
         return RunTimeEnum.UNKNOWN.value
 
     @cached_property
@@ -183,7 +183,7 @@ class Runtime:
         if self.is_ci:
             return RunTimeEnum.CI.value
         if self.is_local:
-            return RunTimeEnum.LOCAL.value
+            return RunTimeEnum.local.value
         raise ValueError("Not in local or CI environment")
 
 

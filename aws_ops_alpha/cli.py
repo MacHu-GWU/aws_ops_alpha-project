@@ -32,7 +32,7 @@ class Command:
                 f"valid name list: {name_list}"
             )
             return
-        importlib.import_module(f"aws_ops_alpha.rule.{name}.api").rule_set.display()
+        importlib.import_module(f"aws_ops_alpha.workflow.{name}.api").rule_set.display()
 
 
 def main():

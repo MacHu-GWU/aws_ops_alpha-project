@@ -104,6 +104,8 @@ def publish_lambda_layer(
             layer_deployment=layer_deployment,
         )
 
+    return layer_deployment
+
 
 @logger.emoji_block(
     msg="Publish new Lambda version",

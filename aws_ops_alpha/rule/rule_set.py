@@ -167,7 +167,7 @@ class TruthTable:
         """
         Get the flag value for a step and a condition.
         """
-        return self.mapper[step][condition]
+        return self.mapper.get(step, {}).get(condition, False)
 
 
 def snake_to_camel(text: str) -> str:

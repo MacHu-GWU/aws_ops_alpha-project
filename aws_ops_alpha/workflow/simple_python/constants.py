@@ -23,6 +23,7 @@ class GitBranchNameEnum(str, enum.Enum):
 
 class EnvNameEnum(str, enum.Enum):
     devops = "devops"
+    sbx = "sbx"
 
 
 class RuntimeNameEnum(str, enum.Enum):
