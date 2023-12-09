@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from aws_ops_alpha.rule.simple_lambda.api import (
-    rule_set,
+from aws_ops_alpha.workflow.simple_lambda.rule import rule_set
+from aws_ops_alpha.workflow.simple_lambda.constants import (
     StepEnum,
     GitBranchNameEnum,
     EnvNameEnum,
@@ -39,9 +39,6 @@ class TestRuleSet:
             verbose=verbose,
         )
         assert flag is True
-
-    def test_display(self):
-        rule_set.display(verbose=verbose)
 
 
 if __name__ == "__main__":

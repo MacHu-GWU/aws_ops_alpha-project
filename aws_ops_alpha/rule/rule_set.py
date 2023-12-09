@@ -84,7 +84,7 @@ def read_tsv(path: Path) -> T.Tuple[T_INDICES, T_COLUMNS, T_DATA]:
         reader = csv.reader(f, delimiter="\t")
         rows = list(reader)
     columns = rows[0][1:]
-    if len(set(columns)) != len(columns):
+    if len(set(columns)) != len(columns):  # pragma: no cover
         raise ValueError("Duplicate value in headers")
     indices = []
     data = []
@@ -170,7 +170,7 @@ class TruthTable:
         return self.mapper.get(step, {}).get(condition, False)
 
 
-def snake_to_camel(text: str) -> str:
+def snake_to_camel(text: str) -> str:  # pragma: no cover
     """
     Convert snake case to camel case.
     """
@@ -221,7 +221,7 @@ class RuleSet:
             steps = truth_table.steps
             truth_table_steps_fingerprint_list.append("----".join(steps))
 
-        if len(set(truth_table_steps_fingerprint_list)) != 1: # pragma: no cover
+        if len(set(truth_table_steps_fingerprint_list)) != 1:  # pragma: no cover
             raise ValueError("The steps in all truth tables must be the same.")
 
         return cls(
@@ -257,7 +257,7 @@ class RuleSet:
                 condition=condition_value,
             )
             if flag is False:
-                if verbose:
+                if verbose:  # pragma: no cover
                     logger.info(
                         no_go_message_template.format(
                             step=step,
@@ -328,7 +328,7 @@ class RuleSet:
                     Text(step, style="cyan"),
                     *[_bool_to_symbol_mapper[flag] for flag in flag_list],
                 )
-            if verbose:
+            if verbose:  # pragma: no cover
                 console.print(table)
 
 

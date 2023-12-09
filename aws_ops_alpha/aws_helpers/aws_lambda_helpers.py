@@ -103,7 +103,9 @@ def explain_layer_deployment(
         aws_console = aws_console_url.AWSConsole.from_bsm(bsm=bsm_devops)
         logger.info(f"published a new layer version: {layer_deployment.layer_version}")
         logger.info(f"published layer arn: {layer_deployment.layer_version_arn}")
-        layer_console_url = aws_console.awslambda.filter_layers(layer_deployment.layer_name)
+        layer_console_url = aws_console.awslambda.filter_layers(
+            layer_deployment.layer_name
+        )
         logger.info(f"preview deployed layer at {layer_console_url}")
         console_url = layer_deployment.s3path_layer_zip.console_url
         logger.info(f"preview layer.zip at {console_url}")
