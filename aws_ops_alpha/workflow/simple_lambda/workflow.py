@@ -8,6 +8,8 @@ Developer note:
 
 # standard library
 import typing as T
+import time
+from pathlib import Path
 
 # third party library (include vendor)
 import aws_console_url.api as aws_console_url
@@ -18,7 +20,9 @@ from ...vendor import semantic_branch as sem_branch
 # modules from this project
 from ...logger import logger
 from ...git import detect_semantic_branch
-from ...aws_helpers import aws_lambda_helpers
+from ...aws_helpers import aws_cdk_helpers, aws_lambda_helpers
+from ...runtime import RunTimeEnum
+from ...environment import EnvEnum
 
 # modules from this submodule
 from .constants import StepEnum, GitBranchNameEnum
@@ -36,6 +40,7 @@ def is_layer_branch(name: str) -> bool:
 
 
 def is_app_branch(name: str) -> bool:
+    # todo, branch name could be app-123
     return sem_branch.is_certain_semantic_branch(name, ["app"])
 
 
@@ -53,6 +58,25 @@ _semantic_branch_mapper = {
 
 def _detect_semantic_branch(full_git_branch_name: str) -> str:
     return detect_semantic_branch(full_git_branch_name, _semantic_branch_mapper)
+
+
+@logger.start_and_end(
+    msg="Build Lambda Source Artifacts",
+    start_emoji=f"{Emoji.build} {Emoji.awslambda}",
+    error_emoji=f"{Emoji.failed} {Emoji.build} {Emoji.awslambda}",
+    end_emoji=f"{Emoji.succeeded} {Emoji.build} {Emoji.awslambda}",
+    pipe=Emoji.awslambda,
+)
+def build_lambda_source(
+    pyproject_ops: "pyops.PyProjectOps",
+    verbose: bool = False,
+):
+    source_sha256, path_source_zip = aws_lambda_helpers.build_lambda_source(
+        pyproject_ops=pyproject_ops,
+        verbose=verbose,
+    )
+    logger.info(f"review source artifacts at local: {path_source_zip}")
+    logger.info(f"review source artifacts sha256: {source_sha256}")
 
 
 @logger.start_and_end(
@@ -137,6 +161,136 @@ def publish_lambda_version(
         url = aws_console.awslambda.get_function(lbd_func_name)
         logger.info(f"preview lambda function {lbd_func_name!r}: {url}", 1)
         publish_version(lbd_client=bsm_workload.lambda_client, func_name=lbd_func_name)
+
+
+@logger.start_and_end(
+    msg="Deploy App",
+    start_emoji=f"{Emoji.deploy}",
+    error_emoji=f"{Emoji.failed} {Emoji.deploy}",
+    end_emoji=f"{Emoji.succeeded} {Emoji.deploy}",
+    pipe=Emoji.deploy,
+)
+def deploy_app(
+    git_branch_name: str,
+    env_name: str,
+    runtime_name: str,
+    bsm_workload: "BotoSesManager",
+    lbd_func_name_list: T.List[str],
+    dir_cdk: Path,
+    stack_name: str,
+    skip_prompt: bool = False,
+    check: bool = True,
+):
+    logger.info(f"deploy app to {env_name!r} env ...")
+    aws_console = aws_console_url.AWSConsole.from_bsm(bsm=bsm_workload)
+    url = aws_console.cloudformation.filter_stack(name=stack_name)
+    logger.info(f"preview cloudformation stack: {url}")
+
+    if check:
+        flag = rule_set.should_we_do_it(
+            step=StepEnum.DEPLOY_LAMBDA_APP_VIA_CDK,
+            git_branch_name=_detect_semantic_branch(git_branch_name),
+            env_name=env_name,
+            runtime_name=runtime_name,
+        )
+        if flag is False:
+            return
+
+    with logger.nested():
+        build_lambda_source()
+        aws_cdk_helpers.cdk_deploy(
+            bsm_workload=bsm_workload,
+            dir_cdk=dir_cdk,
+            env_name=env_name,
+            skip_prompt=skip_prompt,
+        )
+        publish_lambda_version(
+            git_branch_name=git_branch_name,
+            env_name=env_name,
+            runtime_name=runtime_name,
+            bsm_workload=bsm_workload,
+            lbd_func_name_list=lbd_func_name_list,
+        )
+
+
+@logger.start_and_end(
+    msg="Delete App",
+    start_emoji=f"{Emoji.delete}",
+    error_emoji=f"{Emoji.failed} {Emoji.delete}",
+    end_emoji=f"{Emoji.succeeded} {Emoji.delete}",
+    pipe=Emoji.delete,
+)
+def delete_app(
+    git_branch_name: str,
+    env_name: str,
+    runtime_name: str,
+    bsm_workload: "BotoSesManager",
+    dir_cdk: Path,
+    stack_name: str,
+    skip_prompt: bool = False,
+    check: bool = True,
+):
+    logger.info(f"delete app from {env_name!r} env ...")
+    aws_console = aws_console_url.AWSConsole.from_bsm(bsm=bsm_workload)
+    url = aws_console.cloudformation.filter_stack(name=stack_name)
+    logger.info(f"preview cloudformation stack: {url}")
+
+    if check:
+        _mapper = {
+            EnvEnum.devops.value: StepEnum.DELETE_LAMBDA_APP_IN_SBX.value,
+            EnvEnum.sbx.value: StepEnum.DELETE_LAMBDA_APP_IN_SBX.value,
+            EnvEnum.tst.value: StepEnum.DELETE_LAMBDA_APP_IN_TST.value,
+            EnvEnum.stg.value: StepEnum.DELETE_LAMBDA_APP_IN_STG.value,
+            EnvEnum.prd.value: StepEnum.DELETE_LAMBDA_APP_IN_PRD.value,
+        }
+
+        flag = rule_set.should_we_do_it(
+            step=_mapper[env_name],
+            git_branch_name=_detect_semantic_branch(git_branch_name),
+            env_name=env_name,
+            runtime_name=runtime_name,
+        )
+        if flag is False:
+            return
+
+    with logger.nested():
+        aws_cdk_helpers.cdk_destroy(
+            bsm_workload=bsm_workload,
+            dir_cdk=dir_cdk,
+            env_name=env_name,
+            skip_prompt=skip_prompt,
+        )
+
+
+@logger.emoji_block(
+    msg="Run Integration Test",
+    emoji=Emoji.test,
+)
+def run_int_test(
+    git_branch_name: str,
+    env_name: str,
+    runtime_name: str,
+    pyproject_ops: "pyops.PyProjectOps",
+    wait: bool = False,
+    check: bool = True,
+):
+    logger.info(f"Run integration test in {env_name!r} env...")
+    if check:
+        flag = rule_set.should_we_do_it(
+            step=StepEnum.RUN_INTEGRATION_TEST,
+            git_branch_name=_detect_semantic_branch(git_branch_name),
+            env_name=env_name,
+            runtime_name=runtime_name,
+        )
+        if flag is False:
+            return
+
+    # you may want to wait a few seconds for the CDK deployment taking effect
+    # you should do this in CI environment if you run integration test
+    # right after ``cdk deploy``
+    if wait:
+        time.sleep(5)
+    pyproject_ops.run_int_test()
 
 
 # from ..rule1 import (
