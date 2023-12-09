@@ -12,6 +12,7 @@ def test():
     _ = api.get_devops_aws_account_id_in_ci
     _ = api.get_workload_aws_account_id_in_ci
     _ = api.temp_env_var
+    _ = api.EnvEnum
     _ = api.detect_current_env
     _ = api.GitRepo
     _ = api.detect_semantic_branch
