@@ -19,7 +19,7 @@ from ...runtime import runtime
 
 # modules from this submodule
 from .constants import StepEnum, GitBranchNameEnum
-from .rule import rule_set
+from .rule import RuleSet, rule_set as default_rule_set
 
 # type hint
 if T.TYPE_CHECKING:
@@ -94,6 +94,7 @@ def run_unit_test(
     runtime_name: str,
     pyproject_ops: "pyops.PyProjectOps",
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     if check:
         flag = rule_set.should_we_do_it(
@@ -117,6 +118,7 @@ def run_cov_test(
     runtime_name: str,
     pyproject_ops: "pyops.PyProjectOps",
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     if check:
         flag = rule_set.should_we_do_it(
@@ -144,6 +146,7 @@ def build_doc(
     runtime_name: str,
     pyproject_ops: "pyops.PyProjectOps",
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     if check:
         flag = rule_set.should_we_do_it(
@@ -174,6 +177,7 @@ def deploy_versioned_doc(
     bsm_devops: "BotoSesManager",
     bucket: str,
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     if check:
         flag = rule_set.should_we_do_it(
@@ -201,6 +205,7 @@ def deploy_latest_doc(
     bsm_devops: "BotoSesManager",
     bucket: str,
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     if check:
         flag = rule_set.should_we_do_it(

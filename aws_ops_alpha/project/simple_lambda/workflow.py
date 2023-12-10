@@ -24,7 +24,7 @@ from ...environment import EnvEnum
 
 # modules from this submodule
 from .constants import StepEnum, GitBranchNameEnum
-from .rule import rule_set
+from .rule import RuleSet, rule_set as default_rule_set
 
 # type hint
 if T.TYPE_CHECKING:
@@ -85,6 +85,7 @@ def publish_lambda_layer(
     s3dir_lambda: "S3Path",
     tags: T.Dict[str, str],
     check=True,
+    rule_set: RuleSet = default_rule_set,
 ):
     if check:
         flag = rule_set.should_we_do_it(
@@ -133,6 +134,7 @@ def publish_lambda_version(
     bsm_workload: "BotoSesManager",
     lbd_func_name_list: T.List[str],
     check=True,
+    rule_set: RuleSet = default_rule_set,
 ):
     """
     Publish a new lambda version from latest.
@@ -172,6 +174,7 @@ def deploy_app(
     stack_name: str,
     skip_prompt: bool = False,
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     logger.info(f"deploy app to {env_name!r} env ...")
     aws_console = aws_console_url.AWSConsole.from_bsm(bsm=bsm_workload)
@@ -222,6 +225,7 @@ def delete_app(
     stack_name: str,
     skip_prompt: bool = False,
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     logger.info(f"delete app from {env_name!r} env ...")
     aws_console = aws_console_url.AWSConsole.from_bsm(bsm=bsm_workload)
@@ -266,6 +270,7 @@ def run_int_test(
     pyproject_ops: "pyops.PyProjectOps",
     wait: bool = False,
     check: bool = True,
+    rule_set: RuleSet = default_rule_set,
 ):
     logger.info(f"Run integration test in {env_name!r} env...")
     if check:
