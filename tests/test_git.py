@@ -4,6 +4,8 @@ import pytest
 
 from aws_ops_alpha.paths import dir_project_root
 from aws_ops_alpha.git import (
+    InvalidSemanticNameError,
+    SemanticBranchRule,
     MultiGitRepo,
     MonoGitRepo,
     extract_semantic_branch_name_for_multi_repo,
@@ -34,8 +36,6 @@ class TestGitRepo:
         git_repo.print_git_info(verbose=False)
 
         # is certain branch
-        _ = git_repo.semantic_branch_name
-
         _ = git_repo.is_main_branch
         _ = git_repo.is_feature_branch
         _ = git_repo.is_fix_branch
@@ -49,6 +49,26 @@ class TestGitRepo:
         _ = git_repo.is_glue_branch
         _ = git_repo.is_sfn_branch
         _ = git_repo.is_airflow_branch
+
+    def test_semantic_branch_name(self):
+        def _test(git_branch_name, expected_part, expected_name):
+            git_repo = MultiGitRepo(
+                dir_project_root,
+                sem_branch_rule=SemanticBranchRule(
+                    rules={"main": ["main", "master"], "feature": ["feature", "feat"]},
+                ),
+            )
+            git_repo.git_branch_name = git_branch_name
+            assert git_repo.semantic_branch_part == expected_part
+            assert git_repo.semantic_branch_name == expected_name
+
+        _test("main", "main", "main")
+        _test("feature", "feature", "feature")
+        _test("feat", "feat", "feature")
+        _test("feat/description", "feat", "feature")
+        _test("feat-123/description", "feat-123", "feature")
+        with pytest.raises(InvalidSemanticNameError):
+            _test("release", "release", None)
 
 
 if __name__ == "__main__":

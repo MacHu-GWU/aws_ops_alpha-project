@@ -22,9 +22,14 @@ from .runtime import runtime
 from .logger import logger
 
 
+InvalidSemanticNameError = sem_branch.InvalidSemanticNameError
+SemanticBranchRule = sem_branch.SemanticBranchRule
+
+
 @dataclasses.dataclass
 class GitRepo:
     dir_repo: Path = dataclasses.field()
+    sem_branch_rule: T.Optional[SemanticBranchRule] = dataclasses.field(default=None)
 
     # --------------------------------------------------------------------------
     # Get git information from runtime environment
@@ -99,35 +104,39 @@ class GitRepo:
             logger.info(f"Current git commit message is 📜 {self.git_commit_message!r}")
 
     @cached_property
-    def semantic_branch_name(self) -> str:
+    def semantic_branch_part(self) -> str:
         raise NotImplementedError
+
+    @cached_property
+    def semantic_branch_name(self) -> str:
+        return self.sem_branch_rule.parse_semantic_name(self.semantic_branch_part)
 
     # --------------------------------------------------------------------------
     # Identify common semantic branch type
     # --------------------------------------------------------------------------
     @property
     def is_main_branch(self) -> bool:
-        return sem_branch.is_main_branch(self.semantic_branch_name)
+        return sem_branch.is_main_branch(self.semantic_branch_part)
 
     @property
     def is_feature_branch(self) -> bool:
-        return sem_branch.is_feature_branch(self.semantic_branch_name)
+        return sem_branch.is_feature_branch(self.semantic_branch_part)
 
     @property
     def is_fix_branch(self) -> bool:
-        return sem_branch.is_fix_branch(self.semantic_branch_name)
+        return sem_branch.is_fix_branch(self.semantic_branch_part)
 
     @property
     def is_doc_branch(self) -> bool:
-        return sem_branch.is_doc_branch(self.semantic_branch_name)
+        return sem_branch.is_doc_branch(self.semantic_branch_part)
 
     @property
     def is_release_branch(self) -> bool:
-        return sem_branch.is_release_branch(self.semantic_branch_name)
+        return sem_branch.is_release_branch(self.semantic_branch_part)
 
     @property
     def is_cleanup_branch(self) -> bool:
-        return sem_branch.is_cleanup_branch(self.semantic_branch_name)
+        return sem_branch.is_cleanup_branch(self.semantic_branch_part)
 
     # --------------------------------------------------------------------------
     # Identify AWS Ops semantic branch type
@@ -135,49 +144,49 @@ class GitRepo:
     @property
     def is_lambda_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.lbd, AwsOpsSemanticBranchEnum.awslambda],
         )
 
     @property
     def is_layer_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.layer],
         )
 
     @property
     def is_ecr_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.ecr],
         )
 
     @property
     def is_ami_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.ami],
         )
 
     @property
     def is_glue_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.glue],
         )
 
     @property
     def is_sfn_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.sfn],
         )
 
     @property
     def is_airflow_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.semantic_branch_name,
+            self.semantic_branch_part,
             [AwsOpsSemanticBranchEnum.airflow],
         )
 
@@ -223,7 +232,7 @@ class MultiGitRepo(GitRepo):  # pragma: no cover
     """
 
     @cached_property
-    def semantic_branch_name(self) -> str:
+    def semantic_branch_part(self) -> str:
         return extract_semantic_branch_name_for_multi_repo(self.git_branch_name)
 
 
@@ -236,5 +245,5 @@ class MonoGitRepo(GitRepo):  # pragma: no cover
     """
 
     @cached_property
-    def semantic_branch_name(self) -> str:
+    def semantic_branch_part(self) -> str:
         return extract_semantic_branch_name_for_mono_repo(self.git_branch_name)
