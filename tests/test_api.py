@@ -15,7 +15,8 @@ def test():
     _ = api.EnvEnum
     _ = api.detect_current_env
     _ = api.GitRepo
-    _ = api.detect_semantic_branch
+    _ = api.MultiGitRepo
+    _ = api.MonoGitRepo
     _ = api.BotoSesFactory
     _ = api.logger
     _ = api.constants
