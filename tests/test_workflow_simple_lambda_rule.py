@@ -29,7 +29,7 @@ class TestRuleSet:
             runtime_name=RuntimeNameEnum.ci.value,
             verbose=verbose,
         )
-        assert flag is False
+        assert flag is True
 
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_LAMBDA_LAYER.value,
@@ -39,6 +39,15 @@ class TestRuleSet:
             verbose=verbose,
         )
         assert flag is True
+
+        flag = rule_set.should_we_do_it(
+            step=StepEnum.DELETE_LAMBDA_APP_IN_SBX.value,
+            git_branch_name=GitBranchNameEnum.app.value,
+            env_name=EnvNameEnum.devops.value,
+            runtime_name=RuntimeNameEnum.ci.value,
+            verbose=verbose,
+        )
+        assert flag is False
 
 
 if __name__ == "__main__":
