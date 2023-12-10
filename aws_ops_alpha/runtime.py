@@ -45,6 +45,9 @@ class RunTimeEnum(str, enum.Enum):
 class Runtime:
     """
     Detect the current runtime information by inspecting environment variables.
+
+    The instance of this class is the entry point of all kinds of runtime related
+    variables, methods.
     """
 
     @cached_property

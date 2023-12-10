@@ -25,7 +25,6 @@ from .environment import detect_current_env
 from .git import GitRepo
 from .git import MultiGitRepo
 from .git import MonoGitRepo
-from .git import detect_semantic_branch
 from .boto_ses import BotoSesFactory
 from .logger import logger
 from . import constants

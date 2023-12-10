@@ -19,6 +19,9 @@ from .env_var import (
 class BotoSesFactory(abc.ABC):
     """
     Manages creation of boto session manager.
+
+    The instance of this class is the central place to access different boto session
+    for different environments' AWS account.
     """
     config: "Config" = dataclasses.field()
     runtime: "Runtime" = dataclasses.field()
