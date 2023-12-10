@@ -12,7 +12,8 @@ USER_ENV_NAME = "USER_ENV_NAME"
 
 
 class AwsOpsSemanticBranchEnum(str, enum.Enum):
-    lbd = "new"
+    app = "app"
+    lbd = "lbd"
     awslambda = "lambda"
     layer = "layer"
     ecr = "ecr"

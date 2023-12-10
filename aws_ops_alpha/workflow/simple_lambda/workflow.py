@@ -19,9 +19,7 @@ from ...vendor import semantic_branch as sem_branch
 
 # modules from this project
 from ...logger import logger
-from ...git import detect_semantic_branch
 from ...aws_helpers import aws_cdk_helpers, aws_lambda_helpers
-from ...runtime import RunTimeEnum
 from ...environment import EnvEnum
 
 # modules from this submodule
@@ -35,30 +33,20 @@ if T.TYPE_CHECKING:
     from s3pathlib import S3Path
 
 
-def is_layer_branch(name: str) -> bool:
-    return sem_branch.is_certain_semantic_branch(name, ["layer"])
-
-
-def is_app_branch(name: str) -> bool:
-    # todo, branch name could be app-123
-    return sem_branch.is_certain_semantic_branch(name, ["app"])
-
-
-_semantic_branch_mapper = {
-    GitBranchNameEnum.main: sem_branch.is_main_branch,
-    GitBranchNameEnum.feature: sem_branch.is_feature_branch,
-    GitBranchNameEnum.fix: sem_branch.is_fix_branch,
-    GitBranchNameEnum.doc: sem_branch.is_doc_branch,
-    GitBranchNameEnum.layer: is_layer_branch,
-    GitBranchNameEnum.app: is_app_branch,
-    GitBranchNameEnum.release: sem_branch.is_release_branch,
-    GitBranchNameEnum.cleanup: sem_branch.is_cleanup_branch,
+semantic_branch_rules = {
+    GitBranchNameEnum.main: ["main", "master"],
+    GitBranchNameEnum.feature: ["feature", "feat"],
+    GitBranchNameEnum.fix: ["fix"],
+    GitBranchNameEnum.doc: ["doc"],
+    GitBranchNameEnum.layer: ["layer"],
+    GitBranchNameEnum.app: ["app"],
+    GitBranchNameEnum.release: ["release", "rls"],
+    GitBranchNameEnum.cleanup: ["cleanup", "clean"]
 }
 
-
-def _detect_semantic_branch(full_git_branch_name: str) -> str:
-    return detect_semantic_branch(full_git_branch_name, _semantic_branch_mapper)
-
+semantic_branch_rule = sem_branch.SemanticBranchRule(
+    rules=semantic_branch_rules,
+)
 
 @logger.start_and_end(
     msg="Build Lambda Source Artifacts",
@@ -101,7 +89,7 @@ def publish_lambda_layer(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_LAMBDA_LAYER,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -149,7 +137,7 @@ def publish_lambda_version(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_NEW_LAMBDA_VERSION,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -189,7 +177,7 @@ def deploy_app(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.DEPLOY_LAMBDA_APP_VIA_CDK,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -246,7 +234,7 @@ def delete_app(
 
         flag = rule_set.should_we_do_it(
             step=_mapper[env_name],
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -278,7 +266,7 @@ def run_int_test(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.RUN_INTEGRATION_TEST,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )

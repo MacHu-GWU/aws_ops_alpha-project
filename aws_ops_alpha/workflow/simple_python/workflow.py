@@ -16,7 +16,6 @@ from ...vendor import semantic_branch as sem_branch
 # modules from this project
 from ...logger import logger
 from ...runtime import runtime
-from ...git import detect_semantic_branch
 
 # modules from this submodule
 from .constants import StepEnum, GitBranchNameEnum
@@ -28,19 +27,18 @@ if T.TYPE_CHECKING:
     from boto_session_manager import BotoSesManager
 
 
-_semantic_branch_mapper = {
-    GitBranchNameEnum.main: sem_branch.is_main_branch,
-    GitBranchNameEnum.feature: sem_branch.is_feature_branch,
-    GitBranchNameEnum.fix: sem_branch.is_fix_branch,
-    GitBranchNameEnum.test: sem_branch.is_test_branch,
-    GitBranchNameEnum.doc: sem_branch.is_doc_branch,
-    GitBranchNameEnum.release: sem_branch.is_release_branch,
+semantic_branch_rules = {
+    GitBranchNameEnum.main: ["main", "master"],
+    GitBranchNameEnum.feature: ["feature", "feat"],
+    GitBranchNameEnum.fix: ["fix"],
+    GitBranchNameEnum.test: ["test"],
+    GitBranchNameEnum.doc: ["doc"],
+    GitBranchNameEnum.release: ["release", "rls"],
 }
 
-
-def _detect_semantic_branch(full_git_branch_name: str) -> str:
-    return detect_semantic_branch(full_git_branch_name, _semantic_branch_mapper)
-
+semantic_branch_rule = sem_branch.SemanticBranchRule(
+    rules=semantic_branch_rules,
+)
 
 quiet = True if runtime.is_ci else False
 
@@ -100,7 +98,7 @@ def run_unit_test(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.RUN_CODE_COVERAGE_TEST,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -123,7 +121,7 @@ def run_cov_test(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.RUN_CODE_COVERAGE_TEST,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -150,7 +148,7 @@ def build_doc(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_DOCUMENTATION_WEBSITE,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -180,7 +178,7 @@ def deploy_versioned_doc(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_DOCUMENTATION_WEBSITE,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -207,7 +205,7 @@ def deploy_latest_doc(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_DOCUMENTATION_WEBSITE,
-            git_branch_name=_detect_semantic_branch(git_branch_name),
+            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
             env_name=env_name,
             runtime_name=runtime_name,
         )

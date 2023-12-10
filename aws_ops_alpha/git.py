@@ -6,7 +6,6 @@ This module implements the Git branch strategy related automation.
 
 import typing as T
 import os
-import enum
 import dataclasses
 from pathlib import Path
 from functools import cached_property
@@ -90,57 +89,45 @@ class GitRepo:
         else:
             raise NotImplementedError
 
-    @cached_property
-    def semantic_branch_name(self) -> str:
-        """
-        Extract the semantic branch name from the full git branch name.
-
-        Examples:
-
-        - ``main`` -> ``main``
-        - ``${project_name}/${semantic_name}/${description}`` -> ``${semantic_name}/${description}``
-        """
-        parts = self.git_branch_name.split("/", 1)
-        if len(parts) == 1:  # if main branch
-            return parts[0]
-        else:
-            return parts[-1]
-
     def print_git_info(
         self,
         verbose: bool = True,
     ):
-        if verbose:
+        if verbose:  # pragma: no cover
             logger.info(f"Current git branch is 🔀 {self.git_branch_name!r}")
             logger.info(f"Current git commit is # {self.git_commit_id!r}")
             logger.info(f"Current git commit message is 📜 {self.git_commit_message!r}")
+
+    @cached_property
+    def semantic_branch_name(self) -> str:
+        raise NotImplementedError
 
     # --------------------------------------------------------------------------
     # Identify common semantic branch type
     # --------------------------------------------------------------------------
     @property
     def is_main_branch(self) -> bool:
-        return sem_branch.is_main_branch(self.git_branch_name)
+        return sem_branch.is_main_branch(self.semantic_branch_name)
 
     @property
     def is_feature_branch(self) -> bool:
-        return sem_branch.is_feature_branch(self.git_branch_name)
+        return sem_branch.is_feature_branch(self.semantic_branch_name)
 
     @property
     def is_fix_branch(self) -> bool:
-        return sem_branch.is_fix_branch(self.git_branch_name)
+        return sem_branch.is_fix_branch(self.semantic_branch_name)
 
     @property
     def is_doc_branch(self) -> bool:
-        return sem_branch.is_doc_branch(self.git_branch_name)
+        return sem_branch.is_doc_branch(self.semantic_branch_name)
 
     @property
     def is_release_branch(self) -> bool:
-        return sem_branch.is_release_branch(self.git_branch_name)
+        return sem_branch.is_release_branch(self.semantic_branch_name)
 
     @property
     def is_cleanup_branch(self) -> bool:
-        return sem_branch.is_cleanup_branch(self.git_branch_name)
+        return sem_branch.is_cleanup_branch(self.semantic_branch_name)
 
     # --------------------------------------------------------------------------
     # Identify AWS Ops semantic branch type
@@ -148,77 +135,106 @@ class GitRepo:
     @property
     def is_lambda_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.lbd, AwsOpsSemanticBranchEnum.awslambda],
         )
 
     @property
     def is_layer_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.layer],
         )
 
     @property
     def is_ecr_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.ecr],
         )
 
     @property
     def is_ami_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.ami],
         )
 
     @property
     def is_glue_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.glue],
         )
 
     @property
     def is_sfn_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.sfn],
         )
 
     @property
     def is_airflow_branch(self) -> bool:
         return sem_branch.is_certain_semantic_branch(
-            self.git_branch_name,
+            self.semantic_branch_name,
             [AwsOpsSemanticBranchEnum.airflow],
         )
 
 
-T_MAPPER = T.Dict[enum.Enum, T.Callable[[str], bool]]
-
-
-def detect_semantic_branch(
-    full_git_branch_name: str,
-    mapper: T_MAPPER,
-) -> str:
+def extract_semantic_branch_name_for_multi_repo(git_branch_name: str) -> str:
     """
-    For specific type of project, like simple_python, simple_lambda, we have
-    a list of pre-defined semantic branch name, like "main", "feature/*", "app/*".
+    Extract the semantic branch name from the full git branch name.
 
-    Given a full git branch name, we want to detect the corresponding
-    semantic branch name.
+    Examples::
 
-    :param full_git_branch_name: the full git branch name, this is the value
-        you see in ``git branch`` command.
-    :param mapper: it is a dictionary that the key is the semantic branch name,
-        and the value is a callable function that will return a boolean value
-        to indicate whether the given full git branch name is the semantic branch.
-
-    :return: the matched semantic branch name.
+        >>> extract_semantic_branch_name_for_multi_repo("main")
+        'main'
+        >>> extract_semantic_branch_name_for_multi_repo("feature/add-this-feature")
+        'feature'
     """
-    for git_branch_enum, func in mapper.items():
-        if func(full_git_branch_name):
-            return git_branch_enum.value
-    valid_branches = " | ".join([git_branch_enum.value for git_branch_enum in mapper])
-    raise ValueError(f"{valid_branches}")
+    return git_branch_name.split("/")[0]
+
+
+def extract_semantic_branch_name_for_mono_repo(git_branch_name: str) -> str:
+    """
+    Extract the semantic branch name from the full git branch name.
+    Since this is mono repo, the first part of the full git branch usually
+    are the project name, we are looking for the second part.
+
+    Examples::
+
+        >>> extract_semantic_branch_name_for_multi_repo("main")
+        'main'
+        >>> extract_semantic_branch_name_for_multi_repo("my_project/feature/add-this-feature")
+        'feature'
+    """
+    parts = git_branch_name.split("/")
+    if parts[0].lower().strip() in ("main", "master"):
+        return parts[0]
+    else:
+        return parts[1]
+
+
+@dataclasses.dataclass
+class MultiGitRepo(GitRepo):  # pragma: no cover
+    """
+    Each project is held on an entirely separate, version-controlled repository.
+    """
+
+    @cached_property
+    def semantic_branch_name(self) -> str:
+        return extract_semantic_branch_name_for_multi_repo(self.git_branch_name)
+
+
+@dataclasses.dataclass
+class MonoGitRepo(GitRepo):  # pragma: no cover
+    """
+    A monorepo is a version-controlled code repository that holds many projects.
+    While these projects may be related, they are often logically independent
+    and run by different teams
+    """
+
+    @cached_property
+    def semantic_branch_name(self) -> str:
+        return extract_semantic_branch_name_for_mono_repo(self.git_branch_name)

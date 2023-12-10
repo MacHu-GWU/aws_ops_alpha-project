@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import os
+from aws_ops_alpha.constants import USER_ENV_NAME
 from aws_ops_alpha.runtime import runtime
 from aws_ops_alpha.environment import EnvEnum, detect_current_env
 
@@ -11,6 +13,7 @@ class TestEnvEnum:
 
 
 def test():
+    os.environ[USER_ENV_NAME] = EnvEnum.devops.value
     _ = detect_current_env(runtime)
 
 
