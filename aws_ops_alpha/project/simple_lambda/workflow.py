@@ -110,11 +110,14 @@ def publish_lambda_layer(
     )
 
     if layer_deployment is not None:
-        aws_lambda_helpers.grant_layer_permission(
+        logger.info(f"grant layer permission to workload accounts")
+        principal_list = aws_lambda_helpers.grant_layer_permission(
             bsm_devops=bsm_devops,
             workload_bsm_list=workload_bsm_list,
             layer_deployment=layer_deployment,
         )
+        for principal in principal_list:
+            logger.info(f"grant layer permission to {principal}")
 
     return layer_deployment
 

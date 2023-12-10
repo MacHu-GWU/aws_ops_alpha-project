@@ -75,7 +75,8 @@ def grant_layer_permission(
     bsm_devops: "BotoSesManager",
     workload_bsm_list: T.List["BotoSesManager"],
     layer_deployment: aws_lambda_layer.LayerDeployment,
-):
+) -> T.List[str]:
+    principal_list = list()
     for bsm_workload in workload_bsm_list:
         if (bsm_devops.aws_account_id == bsm_workload.aws_account_id) and (
             bsm_devops.aws_region == bsm_workload.aws_region
@@ -87,6 +88,8 @@ def grant_layer_permission(
             version_number=layer_deployment.layer_version,
             principal=bsm_workload.aws_account_id,
         )
+        principal_list.append(bsm_workload.aws_account_id)
+    return principal_list
 
 
 def explain_layer_deployment(
