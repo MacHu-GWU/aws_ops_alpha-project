@@ -162,6 +162,7 @@ def deploy_app(
     git_branch_name: str,
     env_name: str,
     runtime_name: str,
+    pyproject_ops: "pyops.PyProjectOps",
     bsm_workload: "BotoSesManager",
     lbd_func_name_list: T.List[str],
     dir_cdk: Path,
@@ -185,7 +186,7 @@ def deploy_app(
             return
 
     with logger.nested():
-        build_lambda_source()
+        build_lambda_source(pyproject_ops=pyproject_ops)
         aws_cdk_helpers.cdk_deploy(
             bsm_workload=bsm_workload,
             dir_cdk=dir_cdk,
@@ -198,6 +199,7 @@ def deploy_app(
             runtime_name=runtime_name,
             bsm_workload=bsm_workload,
             lbd_func_name_list=lbd_func_name_list,
+            check=check,
         )
 
 
