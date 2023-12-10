@@ -3,7 +3,8 @@
 """
 Developer note:
 
-    every function in the ``workflow.py`` module should have visualized logging.
+1. every function in the ``workflow.py`` module should have visualized logging.
+
 """
 
 # standard library
@@ -206,6 +207,7 @@ def deploy_app(
             bsm_workload=bsm_workload,
             lbd_func_name_list=lbd_func_name_list,
             check=check,
+            rule_set=rule_set,
         )
 
 
