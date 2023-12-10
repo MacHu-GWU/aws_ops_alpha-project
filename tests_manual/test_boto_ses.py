@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import dataclasses
-from aws_ops_alpha.boto_ses import Config, runtime, BotoSesFactory
+from aws_ops_alpha.boto_ses import AwsOpsAlphaConfig, runtime, BotoSesFactory
 
-aws_ops_alpha_config = Config(
+aws_ops_alpha_config = AwsOpsAlphaConfig(
     env_aws_profile_mapper={
         "devops": "bmt_app_devops_us_east_1",
         "sbx": "bmt_app_dev_us_east_1",

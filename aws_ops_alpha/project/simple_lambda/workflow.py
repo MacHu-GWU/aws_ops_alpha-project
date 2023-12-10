@@ -89,7 +89,7 @@ def publish_lambda_layer(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_LAMBDA_LAYER,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -137,7 +137,7 @@ def publish_lambda_version(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_NEW_LAMBDA_VERSION,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -177,7 +177,7 @@ def deploy_app(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.DEPLOY_LAMBDA_APP_VIA_CDK,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -234,7 +234,7 @@ def delete_app(
 
         flag = rule_set.should_we_do_it(
             step=_mapper[env_name],
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -266,7 +266,7 @@ def run_int_test(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.RUN_INTEGRATION_TEST,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )

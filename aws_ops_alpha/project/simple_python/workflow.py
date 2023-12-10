@@ -98,7 +98,7 @@ def run_unit_test(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.RUN_CODE_COVERAGE_TEST,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -121,7 +121,7 @@ def run_cov_test(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.RUN_CODE_COVERAGE_TEST,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -148,7 +148,7 @@ def build_doc(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_DOCUMENTATION_WEBSITE,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -178,7 +178,7 @@ def deploy_versioned_doc(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_DOCUMENTATION_WEBSITE,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )
@@ -205,7 +205,7 @@ def deploy_latest_doc(
     if check:
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_DOCUMENTATION_WEBSITE,
-            git_branch_name=semantic_branch_rule.parse_semantic_name(git_branch_name),
+            git_branch_name=git_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
         )

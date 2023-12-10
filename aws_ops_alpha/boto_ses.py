@@ -8,7 +8,7 @@ from functools import cached_property
 from boto_session_manager import BotoSesManager
 
 from .constants import DEVOPS, SBX
-from .config import Config
+from .config import AwsOpsAlphaConfig
 from .runtime import Runtime, runtime
 from .env_var import (
     get_workload_aws_account_id_in_ci,
@@ -23,7 +23,7 @@ class BotoSesFactory(abc.ABC):
     The instance of this class is the central place to access different boto session
     for different environments' AWS account.
     """
-    config: "Config" = dataclasses.field()
+    config: "AwsOpsAlphaConfig" = dataclasses.field()
     runtime: "Runtime" = dataclasses.field()
 
     @abc.abstractmethod

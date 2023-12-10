@@ -5,7 +5,7 @@ import dataclasses
 
 
 @dataclasses.dataclass
-class Config:
+class AwsOpsAlphaConfig:
     """
     The aws ops configuration of your project.
 

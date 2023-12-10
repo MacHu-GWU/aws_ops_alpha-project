@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from aws_ops_alpha.workflow.simple_lambda.rule import rule_set
-from aws_ops_alpha.workflow.simple_lambda.constants import (
+from aws_ops_alpha.project.simple_lambda.rule import rule_set
+from aws_ops_alpha.project.simple_lambda.constants import (
     StepEnum,
     GitBranchNameEnum,
     EnvNameEnum,

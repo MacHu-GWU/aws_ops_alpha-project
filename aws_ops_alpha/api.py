@@ -13,7 +13,7 @@ Usage example:
 """
 
 from . import constants
-from .config import Config as AwsOpsAlphaConfig
+from .config import AwsOpsAlphaConfig as AwsOpsAlphaConfig
 from .runtime import Runtime
 from .runtime import RunTimeEnum
 from .runtime import runtime
@@ -30,7 +30,10 @@ from .logger import logger
 from . import constants
 from .aws_helpers import aws_cdk_helpers
 from .aws_helpers import aws_lambda_helpers
-from .workflow import simple_cdk
-from .workflow import simple_python
-from .workflow import simple_lambda
 
+try:
+    from .project.api import simple_python_project
+    from .project.api import simple_cdk_project
+    from .project.api import simple_lambda_project
+except ImportError:
+    pass

@@ -22,9 +22,9 @@ def test():
     _ = api.constants
     _ = api.aws_cdk_helpers
     _ = api.aws_lambda_helpers
-    _ = api.simple_cdk
-    _ = api.simple_python
-    _ = api.simple_lambda
+    _ = api.simple_python_project
+    _ = api.simple_cdk_project
+    _ = api.simple_lambda_project
 
 
 if __name__ == "__main__":

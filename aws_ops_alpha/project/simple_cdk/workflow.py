@@ -4,16 +4,20 @@
 This module implements the automation to deploy CloudFormation stack via CDK.
 """
 
+# standard library
 import typing as T
+import dataclasses
 from pathlib import Path
 
+# third party library (include vendor)
 import aws_console_url.api as aws_console_url
+from ...vendor.emoji import Emoji
 
-from ..vendor.emoji import Emoji
+# modules from this project
+from ...logger import logger
+from ...aws_helpers import aws_cdk_helpers
 
-from ..logger import logger
-from ..aws_helpers import aws_cdk_helpers
-
+# type hint
 if T.TYPE_CHECKING:
     from boto_session_manager import BotoSesManager
 
@@ -42,7 +46,6 @@ def cdk_deploy(
         dir_cdk=dir_cdk,
         skip_prompt=skip_prompt,
     )
-
 
 @logger.emoji_block(
     msg="Run 'cdk destroy'",

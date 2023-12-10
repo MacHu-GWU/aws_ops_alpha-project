@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import itertools
-from aws_ops_alpha.workflow.simple_python.rule import rule_set
-from aws_ops_alpha.workflow.simple_python.constants import (
+from aws_ops_alpha.project.simple_python.rule import rule_set
+from aws_ops_alpha.project.simple_python.constants import (
     StepEnum,
     GitBranchNameEnum,
     EnvNameEnum,
