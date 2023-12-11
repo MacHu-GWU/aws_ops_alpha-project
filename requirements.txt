@@ -1,5 +1,5 @@
 # Core dependencies goes here
-boto_session_manager>=1.5.4,<2.0.0
+boto_session_manager>=1.6.1,<2.0.0
 s3pathlib>=2.1.2,<3.0.0
 pyproject_ops>=0.6.2,<1.0.0
 aws_console_url>=1.4.1,<2.0.0
