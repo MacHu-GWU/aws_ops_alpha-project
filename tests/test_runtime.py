@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from aws_ops_alpha.runtime import runtime
+from aws_ops_alpha.runtime import RunTimeEnum, runtime
 
 
 class TestRuntime:
@@ -45,6 +45,8 @@ class TestRuntime:
             )
             == 1
         )
+
+        assert runtime.local_or_ci in [RunTimeEnum.local, RunTimeEnum.ci]
 
 
 if __name__ == "__main__":

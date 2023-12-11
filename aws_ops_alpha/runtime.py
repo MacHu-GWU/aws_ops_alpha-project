@@ -1,11 +1,24 @@
 # -*- coding: utf-8 -*-
 
 """
-Runtime is the type of computational resource where you run your code.
-For example, local laptop, AWS EC2, AWS Lambda, CI/CD build environment, etc.
-You may need to determine the current runtime to make your code behave differently.
+Runtime refers to the specific computational environment in which your code
+is executed. For example, running code on a local laptop, CI/CD build environments,
+AWS EC2 instances, AWS Lambda functions, and more. Understanding the current runtime
+is essential as it can impact how your code behaves.
 
-This module can detect the current runtime information using LAZY LOAD technique.
+For instance, when running your code on a local laptop, you might want to use
+an AWS CLI named profile to access DevOps or workload AWS accounts. However,
+in an application runtime like AWS Lambda, the default Boto session is typically
+preconfigured for the current workload AWS account.
+
+This Python module is designed to detect the current runtime information and
+offers a set of ``is_xyz`` methods to assist you in crafting conditional logic
+for performing different actions based on the runtime. Notably, many of these
+methods employ the LAZY LOAD technique for efficiency.
+
+While this module is an integral part of the
+https://github.com/MacHu-GWU/aws_ops_alpha-project repository, it is also available
+for standalone use.
 
 Requirements: Python>=3.8
 
@@ -13,9 +26,21 @@ Dependencies::
 
     cached-property>=1.5.2; python_version < '3.8'
 
-Usage example::
+Usage example:
 
-    from runtime import runtime
+    # use in aws_ops_alpha
+    >>> import aws_ops_alpha.api as aws_ops_alpha
+    >>> aws_ops_alpha.runtime.is_local
+    True
+    >>> aws_ops_alpha.runtime.current_runtime
+    'local'
+
+    # use standalone
+    >>> from runtime import runtime
+    >>> runtime.is_local
+    True
+    >>> runtime.current_runtime
+    'local'
 """
 
 import os
@@ -25,7 +50,13 @@ from functools import cached_property
 
 
 class RunTimeEnum(str, enum.Enum):
-    local = "local"  # local laptop
+    """
+    Enumeration of common runtime in AWS projects.
+    """
+
+    # local runtime
+    local = "local"
+    # ci runtimes
     aws_codebuild = "aws_codebuild"
     github_action = "github_action"
     gitlab_ci = "gitlab_ci"
@@ -33,12 +64,14 @@ class RunTimeEnum(str, enum.Enum):
     circleci = "circleci"
     jenkins = "jenkins"
     ci = "ci"
+    # app runtimes
     aws_lambda = "aws_lambda"
     aws_batch = "aws_batch"
     aws_glue = "aws_glue"
     aws_cloud9 = "aws_cloud9"
     aws_ec2 = "aws_ec2"
     aws_ecs = "aws_ecs"
+    # special runtimes
     unknown = "unknown"
 
 
@@ -48,6 +81,8 @@ class Runtime:
 
     The instance of this class is the entry point of all kinds of runtime related
     variables, methods.
+
+    You can extend this class to add more runtime detection logic.
     """
 
     @cached_property
@@ -127,7 +162,11 @@ class Runtime:
 
     @cached_property
     def is_local(self) -> bool:
-        if (
+        """
+        If it is not a CI or app runtimes, it is local.
+        """
+        # or is a short-circuit operator, the performance is good
+        flag = (
             self.is_aws_codebuild
             or self.is_github_action
             or self.is_gitlab_ci
@@ -141,10 +180,8 @@ class Runtime:
             or self.is_aws_cloud9
             or self.is_aws_ec2
             or self.is_aws_ecs
-        ):
-            return False
-        else:
-            return True
+        )
+        return not flag
 
     @cached_property
     def current_runtime(self):  # pragma: no cover
@@ -182,12 +219,18 @@ class Runtime:
         return RunTimeEnum.unknown.value
 
     @cached_property
-    def local_or_ci(self) -> str:
+    def local_or_ci(self) -> str: # pragma: no cover
+        """
+        Return "local" or "ci" if it is local or CI. Otherwise, raise an exception.
+
+        This is useful when you want to use different settings for local and CI.
+        """
         if self.is_ci:
             return RunTimeEnum.ci.value
         if self.is_local:
             return RunTimeEnum.local.value
-        raise ValueError("Not in local or CI environment")
+        raise RuntimeError("Not in local or CI environment")
 
 
+# A singleton object that is used in your concrete project.
 runtime = Runtime()
