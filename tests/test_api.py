@@ -5,7 +5,14 @@ from aws_ops_alpha import api
 
 def test():
     _ = api
-    _ = api.AwsOpsAlphaConfig
+    _ = api.constants
+    _ = api.constants.DEVOPS
+    _ = api.constants.SBX
+    _ = api.constants.TST
+    _ = api.constants.STG
+    _ = api.constants.PRD
+    _ = api.constants.USER_ENV_NAME
+    _ = api.constants.AwsOpsSemanticBranchEnum
     _ = api.Runtime
     _ = api.RunTimeEnum
     _ = api.runtime
@@ -17,9 +24,9 @@ def test():
     _ = api.GitRepo
     _ = api.MultiGitRepo
     _ = api.MonoGitRepo
-    _ = api.BotoSesFactory
+    _ = api.AbstractBotoSesFactory
+    _ = api.AlphaBotoSesFactory
     _ = api.logger
-    _ = api.constants
     _ = api.aws_cdk_helpers
     _ = api.aws_lambda_helpers
     _ = api.simple_python_project

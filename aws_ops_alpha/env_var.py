@@ -45,7 +45,7 @@ def get_workload_aws_account_id_in_ci(env_name: str) -> str:
 @contextlib.contextmanager
 def temp_env_var(mapper: T.Dict[str, str]):
     """
-    Temporarily set environment variables and revert them back
+    Temporarily set environment variables and revert them back.
     """
     # get existing env var
     existing = {}

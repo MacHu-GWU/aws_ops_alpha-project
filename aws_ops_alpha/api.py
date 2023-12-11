@@ -13,7 +13,13 @@ Usage example:
 """
 
 from . import constants
-from .config import AwsOpsAlphaConfig as AwsOpsAlphaConfig
+from .constants import DEVOPS
+from .constants import SBX
+from .constants import TST
+from .constants import STG
+from .constants import PRD
+from .constants import USER_ENV_NAME
+from .constants import AwsOpsSemanticBranchEnum
 from .runtime import Runtime
 from .runtime import RunTimeEnum
 from .runtime import runtime
@@ -27,9 +33,9 @@ from .git import SemanticBranchRule
 from .git import GitRepo
 from .git import MultiGitRepo
 from .git import MonoGitRepo
-from .boto_ses import BotoSesFactory
+from .boto_ses import AbstractBotoSesFactory
+from .boto_ses import AlphaBotoSesFactory
 from .logger import logger
-from . import constants
 from .aws_helpers import aws_cdk_helpers
 from .aws_helpers import aws_lambda_helpers
 
