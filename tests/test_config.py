@@ -73,8 +73,8 @@ def test():
         path_config_secret_json=path_config_secret_json,
         boto_ses_factory=boto_ses_factory,
     )
-    from rich import print as rprint
-    rprint(config)
+    # from rich import print as rprint
+    # rprint(config)
 
 
 if __name__ == "__main__":
