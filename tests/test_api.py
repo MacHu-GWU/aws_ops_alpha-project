@@ -6,12 +6,8 @@ from aws_ops_alpha import api
 def test():
     _ = api
     _ = api.constants
-    _ = api.constants.DEVOPS
-    _ = api.constants.SBX
-    _ = api.constants.TST
-    _ = api.constants.STG
-    _ = api.constants.PRD
-    _ = api.constants.USER_ENV_NAME
+    _ = api.constants.CommonEnvNameEnum
+    _ = api.constants.EnvVarNameEnum
     _ = api.constants.AwsOpsSemanticBranchEnum
     _ = api.Runtime
     _ = api.RunTimeEnum
@@ -19,7 +15,8 @@ def test():
     _ = api.get_devops_aws_account_id_in_ci
     _ = api.get_workload_aws_account_id_in_ci
     _ = api.temp_env_var
-    _ = api.EnvEnum
+    _ = api.BaseEnvNameEnum
+    _ = api.EnvNameEnum
     _ = api.detect_current_env
     _ = api.GitRepo
     _ = api.MultiGitRepo

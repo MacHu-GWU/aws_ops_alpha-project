@@ -125,7 +125,7 @@ class EnvNameEnum(BaseEnvNameEnum):
 
 def detect_current_env(
     runtime: Runtime,
-    env_enum: T.Union[BaseEnvNameEnum, T.Type[BaseEnvNameEnum]],
+    env_name_enum_class: T.Union[BaseEnvNameEnum, T.Type[BaseEnvNameEnum]],
 ) -> str:  # pragma: no cover
     """
     Smartly detect the current environment name.
@@ -135,11 +135,16 @@ def detect_current_env(
 
     If it is a CI runtime or the application runtime, it uses the value
     of environment variable ``USER_ENV_NAME``.
+
+    :param runtime: the :class:`aws_ops_alpha.runtime.Runtime` object, that
+        is the entry point of all kinds of runtime related variables, methods..
+    :param env_name_enum_class: a subclass of ``BaseEnvNameEnum``, note that
+        this is NOT a instance, it is the enum class
     """
     # ----------------------------------------------------------------------
     # Validate the implementation of the enum.
     # ----------------------------------------------------------------------
-    env_enum.validate()
+    env_name_enum_class.validate()
 
     # ----------------------------------------------------------------------
     # For local laptop, by default we use sbx environment
@@ -148,7 +153,7 @@ def detect_current_env(
     if runtime.is_local:
         if EnvVarNameEnum.USER_ENV_NAME.value in os.environ:
             return os.environ[EnvVarNameEnum.USER_ENV_NAME.value]
-        return env_enum._get_sbx().value
+        return env_name_enum_class._get_sbx().value
     # ----------------------------------------------------------------------
     # For ci runtime, the job runtime should use the  "USER_ENV_NAME"
     # environment variable to identify the env name. If it is "devops"
@@ -156,7 +161,7 @@ def detect_current_env(
     # ----------------------------------------------------------------------
     elif runtime.is_ci:
         env_name = os.environ[EnvVarNameEnum.USER_ENV_NAME.value]
-        env_enum.ensure_is_valid_value(env_name)
+        env_name_enum_class.ensure_is_valid_value(env_name)
         return env_name
     # ----------------------------------------------------------------------
     # For app runtime, it should use the  "USER_ENV_NAME" environment variable
@@ -164,5 +169,5 @@ def detect_current_env(
     # ----------------------------------------------------------------------
     else:
         env_name = os.environ[EnvVarNameEnum.USER_ENV_NAME.value]
-        env_enum.ensure_is_valid_value(env_name)
+        env_name_enum_class.ensure_is_valid_value(env_name)
         return env_name

@@ -58,6 +58,7 @@ class TestGitRepo:
                     rules={"main": ["main", "master"], "feature": ["feature", "feat"]},
                 ),
             )
+            # force override git_branch_name
             git_repo.git_branch_name = git_branch_name
             assert git_repo.semantic_branch_part == expected_part
             assert git_repo.semantic_branch_name == expected_name

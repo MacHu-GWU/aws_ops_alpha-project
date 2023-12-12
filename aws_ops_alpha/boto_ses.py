@@ -11,7 +11,7 @@ from functools import cached_property
 
 from boto_session_manager import BotoSesManager
 
-from .constants import DEVOPS, SBX
+from .constants import CommonEnvNameEnum
 from .runtime import Runtime, runtime
 
 
@@ -136,7 +136,7 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
     runtime: "Runtime" = dataclasses.field()
     env_to_profile_mapper: T.Dict[str, str] = dataclasses.field(default_factory=dict)
     aws_region: T.Optional[str] = dataclasses.field(default=None)
-    default_app_env_name: str = dataclasses.field(default=SBX)
+    default_app_env_name: str = dataclasses.field(default=CommonEnvNameEnum.sbx.value)
 
     @abc.abstractmethod
     def get_env_role_arn(self, env_name: str) -> str:
@@ -163,7 +163,7 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
         Get the boto session manager for devops AWS account.
         """
         if self.runtime.is_local:
-            kwargs = dict(profile_name=self.env_to_profile_mapper[DEVOPS])
+            kwargs = dict(profile_name=self.env_to_profile_mapper[CommonEnvNameEnum.devops.value])
             if self.aws_region:
                 kwargs["region_name"] = self.aws_region
             return BotoSesManager(**kwargs)

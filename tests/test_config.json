@@ -4,6 +4,8 @@
         "*.s3bucket_docs": "doc-bucket",
         "*.s3uri_artifacts": "s3://devops-bucket/my_project"
     },
+    "devops": {
+    },
     "sbx": {
         "username": "sbx username",
         "s3uri_data": "s3://sbx-bucket/my_project"
