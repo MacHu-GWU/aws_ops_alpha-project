@@ -13,22 +13,42 @@ from boto_session_manager import BotoSesManager
 
 from .constants import DEVOPS, SBX
 from .runtime import Runtime, runtime
-from .env_var import (
-    get_workload_aws_account_id_in_ci,
-)
 
 
 @dataclasses.dataclass
 class AbstractBotoSesFactory(abc.ABC):
     """
-    Manages creation of boto session manager (bsm) for
-    multi-aws-account, multi-environment deployment. For all bsm object,
-    it provides a factory method to create a new instance of the bsm object,
-    and a cached_property to get the singleton object to reduce
-    authentication overhead.
+    Manages the creation of the
+    `boto session manager (bsm) <https://pypi.org/project/boto-session-manager/>`_
+    for multi-AWS-account, multi-environment deployment.
 
-    The instance of this class is the central place to access different boto session
-    for different environments' AWS account.
+    For all bsm objects, it provides a factory method to create a new instance of the bsm object,
+    and a cached_property to obtain the singleton object, reducing authentication overhead.
+
+    An instance of this class serves as the central point for accessing
+    different Boto sessions for AWS accounts in various environments.
+
+    Note that THIS CLASS IS AN ABSTRACT CLASS, you should inherit from it and implement
+    the following abstract methods before using it:
+
+    - :meth:`AbstractBotoSesFactory.get_devops_bsm`
+    - :meth:`AbstractBotoSesFactory.get_env_bsm`
+    - :meth:`AbstractBotoSesFactory.get_app_bsm`
+    - :meth:`AbstractBotoSesFactory.bsm_devops`
+    - :meth:`AbstractBotoSesFactory.bsm_app`
+    - :meth:`AbstractBotoSesFactory.bsm`
+
+    Sample usage:
+
+        >>> import dataclasses
+        >>> from boto_session_manager import BotoSesManager
+        >>> @dataclasses.dataclass
+        ... class MyBotoSesFactory(AbstractBotoSesFactory):
+        ...     def get_devops_bsm(self) -> BotoSesManager:
+        ...         return BotoSesManager(profile_name="my_devops_profile")
+        >>> boto_ses_factory = MyBotoSesFactory()
+        >>> boto_ses_factory.bsm_devops.sts_client.get_caller_identity()
+        {'UserId': '...', 'Account': '123456789012', 'Arn': '...'}
     """
 
     @abc.abstractmethod
@@ -59,7 +79,6 @@ class AbstractBotoSesFactory(abc.ABC):
         """
         raise NotImplementedError
 
-    @abc.abstractmethod
     @cached_property
     def bsm_devops(self) -> "BotoSesManager":
         """
@@ -67,7 +86,6 @@ class AbstractBotoSesFactory(abc.ABC):
         """
         return self.get_devops_bsm()
 
-    @abc.abstractmethod
     @cached_property
     def bsm_app(self) -> "BotoSesManager":
         """
@@ -82,7 +100,7 @@ class AbstractBotoSesFactory(abc.ABC):
         The shortcut to access the most commonly used boto session manager.
         Usually, it is for the application code.
         """
-        return self.bsm_app
+        raise NotImplementedError
 
 
 @dataclasses.dataclass
@@ -231,20 +249,6 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
             return self.get_env_bsm(env_name=self.default_app_env_name)
         else:
             return BotoSesManager()
-
-    @cached_property
-    def bsm_devops(self) -> "BotoSesManager":
-        """
-        cached property of the :meth:`AlphaBotoSesFactory.get_devops_bsm`.
-        """
-        return self.get_devops_bsm()
-
-    @cached_property
-    def bsm_app(self) -> "BotoSesManager":
-        """
-        cached property of the :meth:`AlphaBotoSesFactory.get_app_bsm`.
-        """
-        return self.get_app_bsm()
 
     @cached_property
     def bsm(self) -> "BotoSesManager":

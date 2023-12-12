@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+"""
+"""
+
 import typing as T
 import os
 import json
@@ -14,23 +17,39 @@ from ..environment import BaseWorkloadEnvEnum, detect_current_env
 from ..boto_ses import AbstractBotoSesFactory
 
 
+T_CONFIG = T.TypeVar("T_CONFIG", bound=multi_env_json.BaseConfig)
+
 def load_config(
     runtime: Runtime,
     env_enum: T.Union[BaseWorkloadEnvEnum, T.Type[BaseWorkloadEnvEnum]],
-    config_class: T.Type[multi_env_json.BaseConfig],
+    # config_class: T.Type[multi_env_json.BaseConfig],
+    config_class: T.Type[T_CONFIG],
     env_class: T.Type[multi_env_json.BaseEnv],
     path_config_json: T.Optional[Path] = None,
     path_config_secret_json: T.Optional[Path] = None,
     boto_ses_factory: T.Optional[AbstractBotoSesFactory] = None,
-):
-    # on local, we consider the local json file as the source of truth
+# ) -> multi_env_json.BaseConfig:
+) -> T_CONFIG:
+    """
+    If you use the recommended multi-environments config management strategy,
+    you can use this function to load the config object.
+
+    1. on local, we consider the local json file as the source of truth. We read
+        config data from ``path_config_json`` and ``path_config_secret_json`` files.
+    2. on ci, we won't have the secret json file available, we read the non-sensitive
+        config.json from git, figure out the aws ssm parameter name, then load config
+        data from it.
+    """
     if runtime.is_local:
         # ensure that the config-secret.json file exists
-        # it should be at the ${HOME}/.projects/${project_name}/config-secret.json
-        # this code block is only used to onboard first time user of this
-        # project template. Once you know about how to handle the config-secret.json file,
-        # you can delete this code block.
+        # I recommend to put it at the ${HOME}/.projects/${project_name}/config-secret.json
+        # if the user haven't created it yet, this code block will print helper
+        # message and generate a sample config-secret.json file for the user.
         if not path_config_secret_json.exists():  # pragma: no cover
+            print(
+                f"create the initial {path_config_secret_json} "
+                f"file for config data, please update it!"
+            )
             path_config_secret_json.parent.mkdir(parents=True, exist_ok=True)
             initial_config_secret_data = {
                 "_shared": {},
@@ -49,9 +68,6 @@ def load_config(
             path_config=f"{path_config_json}",
             path_secret_config=f"{path_config_secret_json}",
         )
-    # on ci, we won't have the secret json file available,
-    # we read the non-sensitive config.json from git, figure out the
-    # aws ssm parameter name, then load config data from it
     elif runtime.is_ci:
         # read non-sensitive config from local file system
         # and then figure out what is the parameter name
@@ -63,7 +79,6 @@ def load_config(
             version="not-applicable",
         )
         # read config from parameter store
-        # we consider the value in parameter store is the ground truth for production
         env_name = detect_current_env(runtime, env_enum)
         if env_name == DEVOPS:
             bsm = boto_ses_factory.bsm_devops

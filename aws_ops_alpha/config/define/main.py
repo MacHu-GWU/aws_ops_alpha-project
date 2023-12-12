@@ -24,7 +24,6 @@ class Env(
         return cls(**data)
 
 
-@dataclasses.dataclass
 class Config(config_patterns.multi_env_json.BaseConfig):
     @classmethod
     def get_current_env(cls) -> str:  # pragma: no cover
