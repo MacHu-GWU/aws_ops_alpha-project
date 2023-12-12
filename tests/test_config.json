@@ -1,0 +1,15 @@
+{
+    "_shared": {
+        "*.project_name": "my_project",
+        "*.s3bucket_docs": "doc-bucket",
+        "*.s3uri_artifacts": "s3://devops-bucket/my_project"
+    },
+    "sbx": {
+        "username": "sbx username",
+        "s3uri_data": "s3://sbx-bucket/my_project"
+    },
+    "prd": {
+        "username": "prd username",
+        "s3uri_data": "s3://prd-bucket/my_project"
+    }
+}
