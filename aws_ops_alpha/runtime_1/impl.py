@@ -65,21 +65,20 @@ class RunTimeEnum(str, enum.Enum):
     Enumeration of common runtime in AWS projects.
     """
 
-    # local runtime
+    # local runtime group
     local = "local"
-    # ci runtimes
+    aws_cloud9 = "aws_cloud9"
+    # ci runtime group
     aws_codebuild = "aws_codebuild"
     github_action = "github_action"
     gitlab_ci = "gitlab_ci"
     bitbucket_pipeline = "bitbucket_pipeline"
     circleci = "circleci"
     jenkins = "jenkins"
-    ci = "ci"
-    # app runtimes
+    # app runtime group
     aws_lambda = "aws_lambda"
     aws_batch = "aws_batch"
     aws_glue = "aws_glue"
-    aws_cloud9 = "aws_cloud9"
     aws_ec2 = "aws_ec2"
     aws_ecs = "aws_ecs"
     # special runtimes
@@ -96,6 +95,9 @@ class Runtime:
     You can extend this class to add more runtime detection logic.
     """
 
+    # --------------------------------------------------------------------------
+    # detect if it is a specific runtime
+    # --------------------------------------------------------------------------
     @cached_property
     def is_aws_codebuild(self) -> bool:
         # ref: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
@@ -125,20 +127,6 @@ class Runtime:
     def is_jenkins(self) -> bool:
         # ref: https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#using-environment-variables
         return "BUILD_TAG" in os.environ and "EXECUTOR_NUMBER" in os.environ
-
-    @cached_property
-    def is_ci(self) -> bool:
-        if (
-            self.is_aws_codebuild
-            or self.is_github_action
-            or self.is_gitlab_ci
-            or self.is_bitbucket_pipeline
-            or self.is_circleci
-            or self.is_jenkins
-        ):
-            return True
-        else:
-            return "CI" in os.environ
 
     @cached_property
     def is_aws_lambda(self) -> bool:
@@ -184,7 +172,6 @@ class Runtime:
             or self.is_bitbucket_pipeline
             or self.is_circleci
             or self.is_jenkins
-            or self.is_ci
             or self.is_aws_lambda
             or self.is_aws_batch
             or self.is_aws_glue
@@ -211,8 +198,6 @@ class Runtime:
             return RunTimeEnum.circleci.value
         if self.is_jenkins:
             return RunTimeEnum.jenkins.value
-        if self.is_ci:
-            return RunTimeEnum.ci.value
         if self.is_aws_lambda:
             return RunTimeEnum.aws_lambda.value
         if self.is_aws_batch:
@@ -229,16 +214,38 @@ class Runtime:
             return RunTimeEnum.local.value
         return RunTimeEnum.unknown.value
 
+    # --------------------------------------------------------------------------
+    # detect if it is a specific runtime group
+    # --------------------------------------------------------------------------
     @cached_property
     def is_local_runtime_group(self) -> bool:
+        """
+        Where developer has access to the local file system and operating system.
+        """
         return self.is_local or self.is_aws_cloud9
 
     @cached_property
     def is_ci_runtime_group(self) -> bool:
-        return self.is_ci
+        """
+        Where CI/CD automation code runs.
+        """
+        if (
+            self.is_aws_codebuild
+            or self.is_github_action
+            or self.is_gitlab_ci
+            or self.is_bitbucket_pipeline
+            or self.is_circleci
+            or self.is_jenkins
+        ):
+            return True
+        else:
+            return "CI" in os.environ
 
     @cached_property
     def is_app_runtime_group(self) -> bool:
+        """
+        Where application code runs.
+        """
         return (
             self.is_aws_lambda
             or self.is_aws_batch
@@ -250,6 +257,9 @@ class Runtime:
 
     @cached_property
     def current_runtime_group(self) -> str:
+        """
+        Return the human friendly name of the current runtime group.
+        """
         if self.is_ci_runtime_group:
             return RunTimeGroupEnum.ci.value
         if self.is_app_runtime_group:
@@ -257,19 +267,6 @@ class Runtime:
         if self.is_local_runtime_group:
             return RunTimeGroupEnum.local.value
         return RunTimeGroupEnum.unknown.value
-
-    @cached_property
-    def local_or_ci(self) -> str:  # pragma: no cover
-        """
-        Return "local" or "ci" if it is local or CI. Otherwise, raise an exception.
-
-        This is useful when you want to use different settings for local and CI.
-        """
-        if self.is_ci:
-            return RunTimeEnum.ci.value
-        if self.is_local:
-            return RunTimeEnum.local.value
-        raise RuntimeError("Not in local or CI environment")
 
 
 # A singleton object that is used in your concrete project.
