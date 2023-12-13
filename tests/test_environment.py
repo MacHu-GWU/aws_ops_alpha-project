@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import os
 import pytest
 
 from aws_ops_alpha.runtime import runtime
+from aws_ops_alpha.constants import EnvVarNameEnum
 from aws_ops_alpha.environment import BaseEnvNameEnum, EnvNameEnum, detect_current_env
 
 
@@ -36,11 +38,13 @@ class MyEnvNameEnum(BaseEnvNameEnum):
 
 class TestMyEnvEnum:
     def test(self):
+        os.environ[EnvVarNameEnum.USER_ENV_NAME.value] = "sbx"
         env_name = detect_current_env(runtime, MyEnvNameEnum)
         # print(f"{env_name = }")
 
 
 def test_detect_current_env():
+    os.environ[EnvVarNameEnum.USER_ENV_NAME.value] = "sbx"
     env_name = detect_current_env(runtime, MyEnvNameEnum)
     # print(f"{env_name = }")
 
