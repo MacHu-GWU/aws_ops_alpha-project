@@ -7,6 +7,8 @@ What is Multi Environment
 ------------------------------------------------------------------------------
 在经典生产级项目中, 通常会使用一个中心化的 DevOps 环境, 以及多个 Workload 环境来部署 App. DevOps 环境一般不部署真正的 App, 而是专注管理运维所用的资源, 例如 CI Job runtime, 以及部署所用到的 Artifacts. 而 Workload 环境则是真正用来部署 App 的. 而将这些环境放在不同的 AWS Account 上的好处是便于给团队中的不同人员不同的权限, 便于管理. 例如管理员可以管理 DevOps 上的全部资源. 每个 App 的负责人可以编辑 Production, 而普通开发者只能编辑 Sandbox, 而不能编辑 Production.
 
+在后续的文档中, 我们会用 **1 + N** 这个术语来指代一个 DevOps 环境以及多个 Workload 环境的组合.
+
 
 What is DevOps Environment
 ------------------------------------------------------------------------------
@@ -20,7 +22,7 @@ How many Workload Environment I need
 ------------------------------------------------------------------------------
 对于不同的项目, 一共需要多少个环境是要视具体情况而定的. 但是通常情况下, 一般都至少要三个 Workload 环境, sbx 是完全隔离的, 用于开发. tst 是用于 integration test 和 end to end test 的. 而 prd 则是真正的生产环境. 对于有些项目还可能会有 stg 用于克隆生产环境中的数据, 用真实数据进行测试, 也可能有 qa 用户质量检查.
 
-本项目不对 Workload 环境的数量做限制, 而是交给用户自己决定. 无论用户有多少 Workload 环境, 本项目提供了一些工具使得这些 Workload 环境中的特殊规则可以轻易的和 App 代码集成.
+本项目不对 Workload 环境的数量做限制, 而是交给用户自己决定. 无论用户最终使用了多少个 Workload 环境, 本项目提供了的工具都能使得这些 Workload 环境中的特殊规则可以轻易的和 App 代码集成.
 
 
 How many AWS Account I need

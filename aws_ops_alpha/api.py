@@ -35,13 +35,12 @@ from .boto_ses import AlphaBotoSesFactory
 from .logger import logger
 from .aws_helpers import aws_cdk_helpers
 from .aws_helpers import aws_lambda_helpers
-from .config.api import Config
-from .config.api import Env
-from .config.api import load_config
+from .config.api import BaseConfig
+from .config.api import BaseEnv
 
 try:
     from .project.api import simple_python_project
     from .project.api import simple_cdk_project
     from .project.api import simple_lambda_project
-except ImportError:
+except ImportError:  # pragma: no cover
     pass

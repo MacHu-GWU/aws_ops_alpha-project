@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from .load import load_config
-from .define.main import Config
-from .define.main import Env
+"""
+Public API for :mod:`aws_ops_alpha.config` module.
+"""
+
+from .main import BaseConfig
+from .main import BaseEnv

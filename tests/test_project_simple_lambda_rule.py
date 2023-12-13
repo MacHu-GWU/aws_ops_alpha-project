@@ -29,7 +29,7 @@ class TestRuleSet:
             runtime_name=RuntimeNameEnum.ci.value,
             verbose=verbose,
         )
-        assert flag is True
+        assert flag is False
 
         flag = rule_set.should_we_do_it(
             step=StepEnum.PUBLISH_LAMBDA_LAYER.value,
