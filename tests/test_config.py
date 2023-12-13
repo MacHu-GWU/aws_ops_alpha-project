@@ -5,7 +5,6 @@ import typing as T
 import dataclasses
 from functools import cached_property
 
-from aws_ops_alpha.constants import CommonEnvNameEnum
 from aws_ops_alpha.paths import dir_project_root
 from aws_ops_alpha.runtime import runtime
 from aws_ops_alpha.environment import BaseEnvNameEnum, detect_current_env
