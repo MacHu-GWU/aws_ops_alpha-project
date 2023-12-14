@@ -11,5 +11,5 @@ sub packages and modules
     :maxdepth: 1
 
     api <api>
-    workflow <workflow>
+    step <step>
     

@@ -225,7 +225,7 @@ class Runtime:
         return self.is_local or self.is_aws_cloud9
 
     @cached_property
-    def is_ci_runtime_group(self) -> bool:
+    def is_ci_runtime_group(self) -> bool:  # pragma: no cover
         """
         Where CI/CD automation code runs.
         """
@@ -256,7 +256,7 @@ class Runtime:
         )
 
     @cached_property
-    def current_runtime_group(self) -> str:
+    def current_runtime_group(self) -> str:  # pragma: no cover
         """
         Return the human friendly name of the current runtime group.
         """
@@ -269,5 +269,5 @@ class Runtime:
         return RunTimeGroupEnum.unknown.value
 
 
-# A singleton object that is used in your concrete project.
+# A singleton object that can be used in your concrete project.
 runtime = Runtime()

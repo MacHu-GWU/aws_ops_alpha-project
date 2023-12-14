@@ -12,7 +12,7 @@ from functools import cached_property
 from boto_session_manager import BotoSesManager
 
 from .constants import CommonEnvNameEnum
-from .runtime import Runtime, runtime
+from .runtime.api import Runtime
 
 
 @dataclasses.dataclass
@@ -28,6 +28,9 @@ class AbstractBotoSesFactory(abc.ABC):
     An instance of this class serves as the central point for accessing
     different Boto sessions for AWS accounts in various environments.
 
+    The purpose of this class is to provide a human-friendly interface to access
+    different boto session for different purpose, regardless of the current runtime.
+
     Note that THIS CLASS IS AN ABSTRACT CLASS, you should inherit from it and implement
     the following abstract methods before using it:
 
@@ -42,10 +45,12 @@ class AbstractBotoSesFactory(abc.ABC):
 
         >>> import dataclasses
         >>> from boto_session_manager import BotoSesManager
+
         >>> @dataclasses.dataclass
         ... class MyBotoSesFactory(AbstractBotoSesFactory):
         ...     def get_devops_bsm(self) -> BotoSesManager:
         ...         return BotoSesManager(profile_name="my_devops_profile")
+
         >>> boto_ses_factory = MyBotoSesFactory()
         >>> boto_ses_factory.bsm_devops.sts_client.get_caller_identity()
         {'UserId': '...', 'Account': '123456789012', 'Arn': '...'}

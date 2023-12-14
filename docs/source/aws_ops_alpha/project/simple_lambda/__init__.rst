@@ -13,5 +13,5 @@ sub packages and modules
     api <api>
     constants <constants>
     rule <rule>
-    workflow <workflow>
+    step <step>
     

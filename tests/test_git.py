@@ -3,7 +3,7 @@
 import pytest
 
 from aws_ops_alpha.paths import dir_project_root
-from aws_ops_alpha.git import (
+from aws_ops_alpha.git.api import (
     InvalidSemanticNameError,
     SemanticBranchRule,
     MultiGitRepo,

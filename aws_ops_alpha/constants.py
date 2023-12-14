@@ -23,7 +23,12 @@ class EnvVarNameEnum(BetterStrEnum):
     """
     # this is an environment variable name that is used to store the current
     # environment name, e.g. "devops", "sbx", "tst", "stg", "prd", etc.
+    # this environment variable has higher priority than the "ENV_NAME"
     USER_ENV_NAME = "USER_ENV_NAME"
+    # this is an environment variable name that is used to store the current
+    # environment name. If the USER_ENV_NAME is set, use USER_ENV_NAME,
+    # otherwise, use this one.
+    ENV_NAME = "ENV_NAME"
 
 
 class AwsOpsSemanticBranchEnum(BetterStrEnum):
