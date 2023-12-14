@@ -8,7 +8,7 @@ from aws_ops_alpha.env_var import (
 
 def test_get_key():
     assert _get_key("sbx", "AWS_ACCOUNT_ID") == "SBX_AWS_ACCOUNT_ID"
-    assert _get_key("sbx", "AWS_ACCOUNT_ID", "DESCRIPTION") == "SBX_AWS_ACCOUNT_ID"
+    assert _get_key("sbx", "AWS_ACCOUNT_ID", "DESCRIPTION") == "SBX_AWS_ACCOUNT_ID_DESCRIPTION"
 
 
 if __name__ == "__main__":

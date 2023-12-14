@@ -6,9 +6,9 @@ import dataclasses
 from functools import cached_property
 
 from aws_ops_alpha.paths import dir_project_root
-from aws_ops_alpha.runtime import runtime
-from aws_ops_alpha.environment import BaseEnvNameEnum, detect_current_env
-from aws_ops_alpha.boto_ses import AlphaBotoSesFactory
+from aws_ops_alpha.runtime.api import runtime
+from aws_ops_alpha.multi_env.api import BaseEnvNameEnum, detect_current_env
+from aws_ops_alpha.boto_ses.api import AlphaBotoSesFactory
 from aws_ops_alpha.config.api import BaseConfig, BaseEnv
 
 

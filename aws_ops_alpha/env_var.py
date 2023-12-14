@@ -29,7 +29,7 @@ def _get_key(
         if suffix.startswith("_") is False:
             suffix = f"_{suffix}"
         key = f"{key}{suffix}"
-    return os.environ[key]
+    return key
 
 
 def get_environment_aws_account_id_in_ci(
@@ -41,7 +41,7 @@ def get_environment_aws_account_id_in_ci(
     specific account id. We assume that your store them in environment variables
     like ``DEVOPS_AWS_ACCOUNT_ID``, ``SBX_AWS_ACCOUNT_ID``, etc ...
     """
-    return _get_key(env_name, "AWS_ACCOUNT_ID", suffix=suffix)
+    return os.environ[_get_key(env_name, "AWS_ACCOUNT_ID", suffix=suffix)]
 
 
 def get_environment_iam_role_arn_in_dev_server(
@@ -54,4 +54,4 @@ def get_environment_iam_role_arn_in_dev_server(
     to assume. We assume that your store them in environment variables like
     ``DEVOPS_IAM_ROLE_ARN``, ``SBX_IAM_ROLE_ARN``.
     """
-    return _get_key(env_name, "IAM_ROLE_ARN", suffix=suffix)
+    return os.environ[_get_key(env_name, "IAM_ROLE_ARN", suffix=suffix)]
