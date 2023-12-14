@@ -11,6 +11,7 @@ sub packages and modules
     :maxdepth: 1
 
     aws_helpers <aws_helpers/__init__>
+    boostrap <boostrap/__init__>
     boto_ses <boto_ses/__init__>
     config <config/__init__>
     git <git/__init__>
@@ -22,9 +23,7 @@ sub packages and modules
     api <api>
     boto_ses <boto_ses>
     cli <cli>
-    config <config>
     constants <constants>
     env_var <env_var>
-    environment <environment>
     logger <logger>
     
