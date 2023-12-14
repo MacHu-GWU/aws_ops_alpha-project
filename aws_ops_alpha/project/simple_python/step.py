@@ -40,7 +40,7 @@ semantic_branch_rule = sem_branch.SemanticBranchRule(
     rules=semantic_branch_rules,
 )
 
-quiet = True if runtime.is_ci else False
+quiet = True if runtime.is_ci_runtime_group else False
 
 
 def pip_install(pyproject_ops: "pyops.PyProjectOps"):  # pragma: no cover

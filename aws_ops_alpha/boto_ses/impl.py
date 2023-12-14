@@ -1,273 +1,287 @@
 # -*- coding: utf-8 -*-
 
 """
-Runtime refers to the specific computational environment in which your code
-is executed. For example, running code on a local laptop, CI/CD build environments,
-AWS EC2 instances, AWS Lambda functions, and more. Understanding the current runtime
-is essential as it can impact how your code behaves.
 
-For instance, when running your code on a local laptop, you might want to use
-an AWS CLI named profile to access DevOps or workload AWS accounts. However,
-in an application runtime like AWS Lambda, the default Boto session is typically
-preconfigured for the current workload AWS account.
-
-This Python module is designed to detect the current runtime information and
-offers a set of ``is_xyz`` methods to assist you in crafting conditional logic
-for performing different actions based on the runtime. Notably, many of these
-methods employ the LAZY LOAD technique for efficiency.
-
-While this module is an integral part of the
-https://github.com/MacHu-GWU/aws_ops_alpha-project repository, it is also available
-for standalone use.
-
-Requirements: Python>=3.8
-
-Dependencies::
-
-    cached-property>=1.5.2; python_version < '3.8'
-
-Usage example:
-
-    # use in aws_ops_alpha
-    >>> import aws_ops_alpha.api as aws_ops_alpha
-    >>> aws_ops_alpha.runtime.is_local
-    True
-    >>> aws_ops_alpha.runtime.current_runtime
-    'local'
-
-    # use standalone
-    >>> from runtime import runtime
-    >>> runtime.is_local
-    True
-    >>> runtime.current_runtime
-    'local'
 """
 
-import os
-import sys
-import enum
+import typing as T
+import abc
+import dataclasses
 from functools import cached_property
 
+from boto_session_manager import BotoSesManager
 
-class RunTimeGroupEnum(str, enum.Enum):
+from ..constants import CommonEnvNameEnum
+from ..runtime.api import Runtime
+
+
+@dataclasses.dataclass
+class AbstractBotoSesFactory(abc.ABC):
     """
-    Enumeration of common runtime groups in AWS projects.
+    Manages the creation of the
+    `boto session manager (bsm) <https://pypi.org/project/boto-session-manager/>`_
+    for multi-AWS-account, multi-environment deployment.
+
+    For all bsm objects, it provides a factory method to create a new instance of the bsm object,
+    and a cached_property to obtain the singleton object, reducing authentication overhead.
+
+    An instance of this class serves as the central point for accessing
+    different Boto sessions for AWS accounts in various environments.
+
+    The purpose of this class is to provide a human-friendly interface to access
+    different boto session for different purpose, regardless of the current runtime.
+
+    Note that THIS CLASS IS AN ABSTRACT CLASS, you should inherit from it and implement
+    the following abstract methods before using it:
+
+    - :meth:`AbstractBotoSesFactory.get_devops_bsm`
+    - :meth:`AbstractBotoSesFactory.get_env_bsm`
+    - :meth:`AbstractBotoSesFactory.get_app_bsm`
+    - :meth:`AbstractBotoSesFactory.bsm_devops`
+    - :meth:`AbstractBotoSesFactory.bsm_app`
+    - :meth:`AbstractBotoSesFactory.bsm`
+
+    Sample usage:
+
+        >>> import dataclasses
+        >>> from boto_session_manager import BotoSesManager
+
+        >>> @dataclasses.dataclass
+        ... class MyBotoSesFactory(AbstractBotoSesFactory):
+        ...     def get_devops_bsm(self) -> BotoSesManager:
+        ...         return BotoSesManager(profile_name="my_devops_profile")
+
+        >>> boto_ses_factory = MyBotoSesFactory()
+        >>> boto_ses_factory.bsm_devops.sts_client.get_caller_identity()
+        {'UserId': '...', 'Account': '123456789012', 'Arn': '...'}
     """
 
-    local = "local"
-    ci = "ci"
-    app = "app"
-    unknown = "unknown"
+    @abc.abstractmethod
+    def get_devops_bsm(self) -> "BotoSesManager":
+        """
+        Get the boto session manager for devops AWS account.
+
+        This bsm is used in devops automation or CI/CD pipeline for upload artifacts.
+        It SHOULD NOT be used by the application code.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_env_bsm(self, env_name: str) -> "BotoSesManager":
+        """
+        Get the boto session manager for workload AWS account.
+
+        This bsm is used to in devops automation or CI/CD pipeline for app deployment.
+        Developers can also use this method to explicitly switch to the AWS account
+        of a specific environment.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_app_bsm(self) -> "BotoSesManager":
+        """
+        Get the boto session manager for application code logic.
+        """
+        raise NotImplementedError
+
+    @cached_property
+    def bsm_devops(self) -> "BotoSesManager":
+        """
+        cached property of the :meth:`AbstractBotoSesFactory.get_devops_bsm`.
+        """
+        return self.get_devops_bsm()
+
+    @cached_property
+    def bsm_app(self) -> "BotoSesManager":
+        """
+        cached property of the :meth:`AbstractBotoSesFactory.get_app_bsm`.
+        """
+        return self.get_app_bsm()
+
+    @abc.abstractmethod
+    @cached_property
+    def bsm(self) -> "BotoSesManager":
+        """
+        The shortcut to access the most commonly used boto session manager.
+        Usually, it is for the application code.
+        """
+        raise NotImplementedError
 
 
-class RunTimeEnum(str, enum.Enum):
+@dataclasses.dataclass
+class AlphaBotoSesFactory(AbstractBotoSesFactory):
     """
-    Enumeration of common runtime in AWS projects.
+    Manages creation of boto session manager for multi-aws-account, multi-environment
+    deployment.
+
+    The instance of this class is the central place to access different boto session
+    for different environments' AWS account.
+
+    Using this class, you agree to the following assumptions:
+
+    1. You use AWS CLI named profile to access devops and workload AWS accounts.
+        on your local laptop. You should provide the ``env_to_profile_mapper``
+        attribute to map the environment name to the AWS CLI named profile name.
+        make sure your AWS CLI named profile also defines the region name.
+    2. You use IAM role for devops and assumed IAM role for workload AWS accounts
+        on CI/CD or AWS Cloud 9 runtime. The default IAM principal should be
+        on the devops AWS account, and the assumed IAM role should be on the
+        workload AWS accounts. The CI/CD or AWS Cloud 9 runtime should have a
+        mechanism to find the workload IAM role arn. For example, you can
+        store them in environment variables.
+    3. In your application runtime, such as AWS EC2, Lambda, the default
+        IAM principal is already on the workload AWS account.
+
+    :param env_to_profile_mapper: a dictionary to map the environment name to the
+        AWS CLI named profile name. Normally, it should have the following keys:
+        ``devops``, ``sbx``, ``tst``, ``stg``, ``prd``.
+    :param aws_region: if specified, use this region name to create the boto session.
     """
 
-    # local runtime group
-    local = "local"
-    aws_cloud9 = "aws_cloud9"
-    # ci runtime group
-    aws_codebuild = "aws_codebuild"
-    github_action = "github_action"
-    gitlab_ci = "gitlab_ci"
-    bitbucket_pipeline = "bitbucket_pipeline"
-    circleci = "circleci"
-    jenkins = "jenkins"
-    # app runtime group
-    aws_lambda = "aws_lambda"
-    aws_batch = "aws_batch"
-    aws_glue = "aws_glue"
-    aws_ec2 = "aws_ec2"
-    aws_ecs = "aws_ecs"
-    # special runtimes
-    unknown = "unknown"
+    runtime: "Runtime" = dataclasses.field()
+    env_to_profile_mapper: T.Dict[str, str] = dataclasses.field(default_factory=dict)
+    aws_region: T.Optional[str] = dataclasses.field(default=None)
+    default_app_env_name: str = dataclasses.field(default=CommonEnvNameEnum.sbx.value)
 
-
-class Runtime:
-    """
-    Detect the current runtime information by inspecting environment variables.
-
-    The instance of this class is the entry point of all kinds of runtime related
-    variables, methods.
-
-    You can extend this class to add more runtime detection logic.
-    """
-
-    # --------------------------------------------------------------------------
-    # detect if it is a specific runtime
-    # --------------------------------------------------------------------------
-    @cached_property
-    def is_aws_codebuild(self) -> bool:
-        # ref: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
-        return "CODEBUILD_BUILD_ID" in os.environ
-
-    @cached_property
-    def is_github_action(self) -> bool:
-        # ref: https://docs.github.com/en/actions/learn-github-actions/variables
-        return "GITHUB_ACTION" in os.environ
-
-    @cached_property
-    def is_gitlab_ci(self) -> bool:
-        # ref: https://docs.gitlab.com/ee/ci/variables/predefined_variables.html
-        return "CI_PROJECT_ID" in os.environ
-
-    @cached_property
-    def is_bitbucket_pipeline(self) -> bool:
-        # ref: https://support.atlassian.com/bitbucket-cloud/docs/variables-and-secrets/
-        return "BITBUCKET_BUILD_NUMBER" in os.environ
-
-    @cached_property
-    def is_circleci(self) -> bool:
-        # ref: https://circleci.com/docs/variables/
-        return "CIRCLECI" in os.environ
-
-    @cached_property
-    def is_jenkins(self) -> bool:
-        # ref: https://www.jenkins.io/doc/book/pipeline/jenkinsfile/#using-environment-variables
-        return "BUILD_TAG" in os.environ and "EXECUTOR_NUMBER" in os.environ
-
-    @cached_property
-    def is_aws_lambda(self) -> bool:
-        # ref: https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html
-        return "AWS_LAMBDA_FUNCTION_NAME" in os.environ
-
-    @cached_property
-    def is_aws_batch(self) -> bool:
-        # ref: https://docs.aws.amazon.com/batch/latest/userguide/job_env_vars.html
-        return "AWS_BATCH_JOB_ID" in os.environ
-
-    @cached_property
-    def is_aws_glue(self) -> bool:
-        return "--JOB_RUN_ID" in sys.argv
-
-    @cached_property
-    def is_aws_cloud9(self) -> bool:
-        return "C9" in os.environ
-
-    @cached_property
-    def is_aws_ec2(self) -> bool:
-        # there's no official way to detect if it is ec2 instance
-        # you could set a custom environment variable for all your ec2 instances
-        return "IS_AWS_EC2" in os.environ
-
-    @cached_property
-    def is_aws_ecs(self) -> bool:
-        # there's no official way to detect if it is ec2 instance
-        # you could set a custom environment variable for all your ec2 instances
-        # ref: https://docs.aws.amazon.com/AmazonECS/latest/userguide/taskdef-envfiles.html
-        return "IS_AWS_ECS_TASK" in os.environ
-
-    @cached_property
-    def is_local(self) -> bool:
+    @abc.abstractmethod
+    def get_env_role_arn(self, env_name: str) -> str:
         """
-        If it is not a CI or app runtimes, it is local.
-        """
-        # or is a short-circuit operator, the performance is good
-        flag = (
-            self.is_aws_codebuild
-            or self.is_github_action
-            or self.is_gitlab_ci
-            or self.is_bitbucket_pipeline
-            or self.is_circleci
-            or self.is_jenkins
-            or self.is_aws_lambda
-            or self.is_aws_batch
-            or self.is_aws_glue
-            or self.is_aws_cloud9
-            or self.is_aws_ec2
-            or self.is_aws_ecs
-        )
-        return not flag
+        An abstract method to get the workload AWS account IAM role name for deployment.
+        You have to subclass this class and implement this method.
 
-    @cached_property
-    def current_runtime(self) -> str:  # pragma: no cover
-        """
-        Return the human friendly name of the current runtime.
-        """
-        if self.is_aws_codebuild:
-            return RunTimeEnum.aws_codebuild.value
-        if self.is_github_action:
-            return RunTimeEnum.github_action.value
-        if self.is_gitlab_ci:
-            return RunTimeEnum.gitlab_ci.value
-        if self.is_bitbucket_pipeline:
-            return RunTimeEnum.bitbucket_pipeline.value
-        if self.is_circleci:
-            return RunTimeEnum.circleci.value
-        if self.is_jenkins:
-            return RunTimeEnum.jenkins.value
-        if self.is_aws_lambda:
-            return RunTimeEnum.aws_lambda.value
-        if self.is_aws_batch:
-            return RunTimeEnum.aws_batch.value
-        if self.is_aws_glue:
-            return RunTimeEnum.aws_glue.value
-        if self.is_aws_cloud9:
-            return RunTimeEnum.aws_cloud9.value
-        if self.is_aws_ec2:
-            return RunTimeEnum.aws_ec2.value
-        if self.is_aws_ecs:
-            return RunTimeEnum.aws_ecs.value
-        if self.is_local:
-            return RunTimeEnum.local.value
-        return RunTimeEnum.unknown.value
+        Usually, you only need this method in CI environment, because on local,
+        you may just need to use AWS CLI named profile to assume the role.
+        But in CI, you don't have AWS CLI named profile, you have to use the
+        default role, which is the devops role to assume workload role.
 
-    # --------------------------------------------------------------------------
-    # detect if it is a specific runtime group
-    # --------------------------------------------------------------------------
-    @cached_property
-    def is_local_runtime_group(self) -> bool:
-        """
-        Where developer has access to the local file system and operating system.
-        """
-        return self.is_local or self.is_aws_cloud9
+        I recommend you to use environment variable to store the IAM role name.
+        Let say you have three environments, sbx, tst, prd. Then you can create
+        three environment variables, SBX_AWS_ACCOUNT_ID, TST_AWS_ACCOUNT_ID,
+        PRD_AWS_ACCOUNT_ID. And use the following naming convention for workload
+        IAM role arn: ``arn:aws:iam::{AWS_ACCOUNT_ID}:role/{ENV_NAME}_deployment_role``.
+        In this way, the implementation of this method should be:
 
-    @cached_property
-    def is_ci_runtime_group(self) -> bool:  # pragma: no cover
+            >>> import os
+            >>> def get_env_role_arn(self, env_name: str) -> str:
+            ...     aws_account_id = os.environ[f"{env_name.upper()}_AWS_ACCOUNT_ID"]
+            ...     return f"arn:aws:iam::{aws_account_id}:role/{env_name}_deployment_role"
         """
-        Where CI/CD automation code runs.
+        raise NotImplementedError
+
+    def get_current_env(self) -> str:
         """
-        if (
-            self.is_aws_codebuild
-            or self.is_github_action
-            or self.is_gitlab_ci
-            or self.is_bitbucket_pipeline
-            or self.is_circleci
-            or self.is_jenkins
-        ):
-            return True
+        An abstract method to get the current environment name.
+        """
+        raise NotImplementedError
+
+    def get_devops_bsm(self) -> "BotoSesManager":  # pragma: no cover
+        """
+        Get the boto session manager for devops AWS account.
+        """
+        if self.runtime.is_local:
+            kwargs = dict(
+                profile_name=self.env_to_profile_mapper[CommonEnvNameEnum.devops.value]
+            )
+            if self.aws_region:
+                kwargs["region_name"] = self.aws_region
+            return BotoSesManager(**kwargs)
+        elif self.runtime.is_ci or self.runtime.is_aws_cloud9:
+            if self.aws_region:
+                return BotoSesManager(region_name=self.aws_region)
+            else:
+                return BotoSesManager()
+        else:  # pragma: no cover
+            raise RuntimeError
+
+    def get_env_bsm(
+        self,
+        env_name: str,
+        role_session_name: T.Optional[str] = None,
+        duration_seconds: int = 3600,
+        region_name: T.Optional[str] = None,
+        auto_refresh: bool = False,
+    ) -> "BotoSesManager":  # pragma: no cover
+        """
+        Get the boto session manager for workload AWS account.
+
+        This bsm is used to in devops automation or CI/CD pipeline for app deployment.
+        Developers can also use this method to explicitly switch to the AWS account
+        of a specific environment.
+
+        :param env_name: the environment name, for example, ``sbx``, ``tst``, ``prd``.
+        :param role_session_name: the session name for the assumed role.
+        :param duration_seconds: the duration in seconds for the assumed role.
+        :param region_name: the region name for the assumed role, if not specified,
+            then use the region name of the devops AWS account.
+        :param auto_refresh: whether to auto refresh the assumed role.
+        """
+        if self.runtime.is_local:
+            kwargs = dict(profile_name=self.env_to_profile_mapper[env_name])
+            if self.aws_region:
+                kwargs["region_name"] = self.aws_region
+            return BotoSesManager(**kwargs)
+        elif self.runtime.is_ci or self.runtime.is_aws_cloud9:
+            bsm_devops = self.get_devops_bsm()
+            if env_name == CommonEnvNameEnum.devops.value:
+                return bsm_devops
+
+            role_arn = self.get_env_role_arn(env_name)
+            # ------------------------------------------------------------------
+            # usually, the default boto session should be the devops bsm
+            # but in CDK deploy shell script, we manually set the default
+            # boto session as the workload bsm, in other words, the bsm_devops
+            # is already the workload bsm. We need special handling here.
+            # ------------------------------------------------------------------
+            # bsm_devops.principal_arn could be either
+            # arn:aws:iam::***:role/devops_role_name
+            # arn:aws:sts::***:assumed-role/workload_role_name/session_name
+            bsm_devops_role_name = bsm_devops.principal_arn.split("/", 1)[1]
+            # role_arn should be
+            # arn:aws:iam::***:role/workload_role_name
+            bsm_workload_role_name = role_arn.split("/")[1]
+            if bsm_devops_role_name.startswith(bsm_workload_role_name):
+                return bsm_devops
+
+            if role_session_name is None:
+                role_session_name = f"{env_name}_session"
+            if region_name is None:
+                if self.aws_region is None:
+                    region_name = bsm_devops.aws_region
+                else:
+                    region_name = self.aws_region
+
+            return bsm_devops.assume_role(
+                role_arn=role_arn,
+                role_session_name=role_session_name,
+                duration_seconds=duration_seconds,
+                region_name=region_name,
+                auto_refresh=auto_refresh,
+            )
+        else:  # pragma: no cover
+            raise RuntimeError
+
+    def get_app_bsm(self) -> "BotoSesManager":  # pragma: no cover
+        """
+        Get the boto session manager for application code logic.
+
+        This bsm is used to access the environment specific AWS resource
+        for application code logic, unit test, integration test, etc.
+        """
+        if self.runtime.is_local or self.runtime.is_aws_cloud9:
+            return self.get_env_bsm(env_name=self.default_app_env_name)
+        elif self.runtime.is_ci:
+            env_name = self.get_current_env()
+            if env_name == CommonEnvNameEnum.devops.value:
+                return self.get_env_bsm(env_name=self.default_app_env_name)
+            else:
+                return self.get_env_bsm(env_name=self.get_current_env())
         else:
-            return "CI" in os.environ
+            return BotoSesManager()
 
     @cached_property
-    def is_app_runtime_group(self) -> bool:
+    def bsm(self) -> "BotoSesManager":  # pragma: no cover
         """
-        Where application code runs.
+        The shortcut to access the most commonly used boto session manager.
+        Usually, it is for the application code.
         """
-        return (
-            self.is_aws_lambda
-            or self.is_aws_batch
-            or self.is_aws_glue
-            or self.is_aws_cloud9
-            or self.is_aws_ec2
-            or self.is_aws_ecs
-        )
-
-    @cached_property
-    def current_runtime_group(self) -> str:  # pragma: no cover
-        """
-        Return the human friendly name of the current runtime group.
-        """
-        if self.is_ci_runtime_group:
-            return RunTimeGroupEnum.ci.value
-        if self.is_app_runtime_group:
-            return RunTimeGroupEnum.app.value
-        if self.is_local_runtime_group:
-            return RunTimeGroupEnum.local.value
-        return RunTimeGroupEnum.unknown.value
-
-
-# A singleton object that can be used in your concrete project.
-runtime = Runtime()
+        return self.bsm_app

@@ -2,7 +2,8 @@
 
 import os
 import dataclasses
-from aws_ops_alpha.boto_ses import AlphaBotoSesFactory, runtime
+from aws_ops_alpha.runtime.api import runtime
+from aws_ops_alpha.boto_ses.api import AlphaBotoSesFactory
 
 
 @dataclasses.dataclass
