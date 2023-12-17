@@ -1,7 +1,7 @@
 # User Settings
 aws_ops_alpha.egg-info/
 tmp/
-
+should_we_do_it.tsv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
