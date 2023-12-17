@@ -4,24 +4,24 @@
 This module implements the automation to deploy CloudFormation stack via CDK.
 """
 
-# standard library
+# --- standard library
 import typing as T
 from pathlib import Path
 
-# third party library (include vendor)
+# --- third party library (include vendor)
 import aws_console_url.api as aws_console_url
 import tt4human.api as tt4human
 from ...vendor.emoji import Emoji
 
-# modules from this project
+# --- modules from this project
 from ...logger import logger
 from ...aws_helpers import aws_cdk_helpers
 from ...rule_set import should_we_do_it
 
-# modules from this submodule
+#--- modules from this submodule
 from .simple_cdk_truth_table import StepEnum, truth_table
 
-# type hint
+# --- type hint
 if T.TYPE_CHECKING:  # pragma: no cover
     from boto_session_manager import BotoSesManager
 
@@ -39,6 +39,7 @@ def cdk_deploy(
     stack_name: str,
     skip_prompt: bool = False,
     check: bool = True,
+    step: str = StepEnum.deploy_cdk_stack.value,
     truth_table: T.Optional[tt4human.TruthTable] = truth_table,
     url: T.Optional[str] = None,
 ):  # pragma: no cover
@@ -47,7 +48,7 @@ def cdk_deploy(
     """
     if check:
         flag = should_we_do_it(
-            step=StepEnum.deploy_cdk_stack.value,
+            step=step,
             semantic_branch_name=semantic_branch_name,
             runtime_name=runtime_name,
             env_name=env_name,
@@ -81,6 +82,7 @@ def cdk_destroy(
     stack_name: str,
     skip_prompt: bool = False,
     check: bool = True,
+    step: str = StepEnum.delete_cdk_stack.value,
     truth_table: T.Optional[tt4human.TruthTable] = truth_table,
     url: T.Optional[str] = None,
 ):  # pragma: no cover
@@ -89,7 +91,7 @@ def cdk_destroy(
     """
     if check:
         flag = should_we_do_it(
-            step=StepEnum.delete_cdk_stack.value,
+            step=step,
             semantic_branch_name=semantic_branch_name,
             env_name=env_name,
             runtime_name=runtime_name,
