@@ -5,6 +5,7 @@ omit =
     aws_ops_alpha/docs/*
     aws_ops_alpha/tests/*
     aws_ops_alpha/vendor/*
+    aws_ops_alpha/project/*/gen_code.py
     aws_ops_alpha/_version.py
     aws_ops_alpha/cli.py
     aws_ops_alpha/paths.py
