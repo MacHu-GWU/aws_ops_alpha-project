@@ -32,6 +32,14 @@ class EnvVarNameEnum(BetterStrEnum):
         usually you should not use this environment variable directly, instead
         let the ``git`` module to detect that automatically. This var
         is useful when you want to override the git branch name for testing.
+    :param USER_GIT_COMMIT_ID: store the name of the current git commit id,
+        usually you should not use this environment variable directly, instead
+        let the ``git`` module to detect that automatically. This var
+        is useful when you want to override the git branch name for testing.
+    :param USER_GIT_COMMIT_MESSAGE: store the name of the current git commit message,
+        usually you should not use this environment variable directly, instead
+        let the ``git`` module to detect that automatically. This var
+        is useful when you want to override the git branch name for testing.
     :param ENV_NAME: store the current environment name. if the USER_ENV_NAME is set,
         use USER_ENV_NAME, otherwise, use this one.
     :param PROJECT_NAME: store the name of the current project,
@@ -44,6 +52,8 @@ class EnvVarNameEnum(BetterStrEnum):
     USER_ENV_NAME = "USER_ENV_NAME"
     USER_RUNTIME_NAME = "USER_RUNTIME_NAME"
     USER_GIT_BRANCH_NAME = "USER_GIT_BRANCH_NAME"
+    USER_GIT_COMMIT_ID = "USER_GIT_COMMIT_ID"
+    USER_GIT_COMMIT_MESSAGE = "USER_GIT_COMMIT_MESSAGE"
     ENV_NAME = "ENV_NAME"
     PROJECT_NAME = "PROJECT_NAME"
     PARAMETER_NAME = "PARAMETER_NAME"
