@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+Bootstrap for Multi Workload AWS Accounts Setup.
+"""
+
 # --- standard library
 import typing as T
 import json
@@ -10,7 +14,7 @@ import dataclasses
 from s3pathlib import S3Path
 import aws_cloudformation.api as aws_cf
 import cross_aws_account_iam_role.api as cross_aws_account_iam_role
-from ...vendor.setup_s3_bucket_for_static_website_hosting import (
+from ...vendor.aws_s3_static_website_hosting import (
     get_public_ip,
     get_bucket_website,
     enable_bucket_static_website_hosting,

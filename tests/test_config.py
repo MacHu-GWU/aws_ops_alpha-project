@@ -41,6 +41,9 @@ class MyConfig(BaseConfig[BaseEnv]):
 
 @dataclasses.dataclass
 class BotoSesFactory(AlphaBotoSesFactory):
+    def get_env_role_session_name(self, env_name: str) -> str:
+        return ""
+
     def get_env_role_arn(self, env_name: str) -> str:
         return ""
 
@@ -75,11 +78,13 @@ def test():
     )
 
     _ = config.env
+
     # app.py
     _ = config.env.s3uri_data
-    _ = config.env.s3bucket_docs
+    _ = config.env.s3uri_docs
     _ = config.env.s3dir_data
     _ = config.env.s3dir_env_data
+    _ = config.env.s3dir_docs
     _ = config.env.env_vars
     _ = config.env.devops_aws_tags
     _ = config.env.workload_aws_tags

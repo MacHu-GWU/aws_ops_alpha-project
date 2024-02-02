@@ -12,4 +12,6 @@ sub packages and modules
 
     aws_cdk_helpers <aws_cdk_helpers>
     aws_lambda_helpers <aws_lambda_helpers>
+    python_helpers <python_helpers>
+    rich_helpers <rich_helpers>
     

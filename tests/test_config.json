@@ -1,7 +1,7 @@
 {
     "_shared": {
         "*.project_name": "my_project",
-        "*.s3bucket_docs": "doc-bucket",
+        "*.s3uri_docs": "s3://doc-host-bucket/my_project",
         "*.s3uri_artifacts": "s3://devops-bucket/my_project"
     },
     "devops": {

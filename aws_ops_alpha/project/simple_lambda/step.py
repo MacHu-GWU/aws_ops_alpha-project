@@ -17,11 +17,11 @@ import aws_console_url.api as aws_console_url
 import tt4human.api as tt4human
 from ...vendor.emoji import Emoji
 from ...vendor.aws_lambda_version_and_alias import publish_version
-from ...rule_set import should_we_do_it
 
 # --- modules from this project
 from ...logger import logger
 from ...aws_helpers import aws_cdk_helpers, aws_lambda_helpers
+from ...rule_set import should_we_do_it
 
 # --- modules from this submodule
 from .simple_lambda_truth_table import StepEnum, truth_table
@@ -161,6 +161,7 @@ def deploy_app(
     runtime_name: str,
     env_name: str,
     pyproject_ops: "pyops.PyProjectOps",
+    bsm_devops: "BotoSesManager",
     bsm_workload: "BotoSesManager",
     lbd_func_name_list: T.List[str],
     dir_cdk: Path,
@@ -192,6 +193,7 @@ def deploy_app(
     with logger.nested():
         build_lambda_source(pyproject_ops=pyproject_ops)
         aws_cdk_helpers.cdk_deploy(
+            bsm_devops=bsm_devops,
             bsm_workload=bsm_workload,
             dir_cdk=dir_cdk,
             env_name=env_name,
@@ -206,7 +208,7 @@ def deploy_app(
             check=check,
             step=publish_new_lambda_version_step,
             truth_table=truth_table,
-            google_sheet_url=url,
+            url=url,
         )
 
 
@@ -221,6 +223,8 @@ def delete_app(
     semantic_branch_name: str,
     runtime_name: str,
     env_name: str,
+    pyproject_ops: "pyops.PyProjectOps",
+    bsm_devops: "BotoSesManager",
     bsm_workload: "BotoSesManager",
     dir_cdk: Path,
     stack_name: str,
@@ -248,7 +252,9 @@ def delete_app(
             return
 
     with logger.nested():
+        build_lambda_source(pyproject_ops=pyproject_ops)
         aws_cdk_helpers.cdk_destroy(
+            bsm_devops=bsm_devops,
             bsm_workload=bsm_workload,
             dir_cdk=dir_cdk,
             env_name=env_name,
