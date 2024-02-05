@@ -1,5 +1,5 @@
 
-.. .. image:: https://readthedocs.org/projects/aws-ops-alpha/badge/?version=latest
+.. image:: https://readthedocs.org/projects/aws-ops-alpha/badge/?version=latest
     :target: https://aws-ops-alpha.readthedocs.io/en/latest/
     :alt: Documentation Status
 
@@ -50,7 +50,8 @@
 
 Welcome to ``aws_ops_alpha`` Documentation
 ==============================================================================
-Documentation for ``aws_ops_alpha``.
+.. image:: https://aws-ops-alpha.readthedocs.io/en/latest/_static/aws_ops_alpha-logo.png
+    :target: https://aws-ops-alpha.readthedocs.io/en/latest/
 
 
 .. _install:
