@@ -50,6 +50,18 @@ AWS Ops 本质上是一步步的 Step 的排列组合. 而在具体项目中 Ste
 这个模块是 AWS Ops 的核心, 它把 ``rule_set`` 中的 Condition 规则, 和 ``aws_helpers`` 中的 Step 逻辑结合起来, 封装成了函数, 并且加上了一些 logging. 相当于是为每一个 Step 创建了一个函数, 它能自动判断要不要 Run, 然后在 Run 的过程中自动打上日志. 这些函数都是高度参数化的, 开发者可以在实际的项目中 import 它们, 并且传入参数来运行常见的 DevOps Step. 这些参数通常是 boto session, truth table 对象等等. 这样的设计可以大大简化开发者在实际项目中的工作量. 如果开发者使用 ``aws_ops_alpha`` 所推荐的默认设置, 则基本什么都不用改. 而如果开发者使用了自定义的 ``env_name``, ``runtime``, ``semantic_branch_name``, ``rule_set``, 则只需要传入对应的自定义参数即可.
 
 
+``aws_ops_alpha/project/${project_type}`` Folder
+------------------------------------------------------------------------------
+对于每一种 project 类型 (比如 cdk 是一种类型的 project, lambda 是另一种类型的 project),
+
+- ``gen_code.py``: 在为一个新的 project 类型定义 Conditional Step 之前, 需要在这个模块中定义有哪些 Step, 哪些 branch, 哪些 runtime, 哪些 env_name. 然后运行这个脚本就会自动生成 ``should_we_do_it.tsv`` 模版供开发者进行编辑. 如果你已经编辑好了 ``should_we_do_it.tsv`` 文件, 运行这个脚本则会自动生成 ``${project_type}_truth_table.py`` 和 ``${project_type}_truth_table.py`` 两个文件.
+- ``should_we_do_it.tsv``: 开发者用于本地编辑的文件, 用于定义 Condition 规则. 这个文件不会被 check in 到 Git 中.
+- ``${project_type}_truth_table.tsv``, ``should_we_do_it.tsv`` 的副本, 会被 check in 到 Git 中.
+- ``${project_type}_truth_table.py``, 一个 Python 模块, 提供了一个简洁的 API 用于读取 ``${project_type}_truth_table.tsv`` 文件中的数据, 并根据 condition 的情况决定 step 要不要被执行. 这个模块会被 ``aws_ops_alpha.project.${project_type}.step.py`` 模块使用.
+- ``rule_set.py``: 对 Condition 的 Enum 做一些自定义的处理. 最终会被 ``aws_ops_alpha.project.${project_type}.step.py`` 模块使用.
+- ``step.py``: 定义了在这种 project 类型中会用到的 Step 的自动化脚本的函数. 这些函数通常会打上一些 Log.
+
+
 ``aws_ops_alpha/boto_ses`` Folder
 ------------------------------------------------------------------------------
 既然是 AWS 项目, 那么就必然涉及到 boto session 的创建以及管理.
