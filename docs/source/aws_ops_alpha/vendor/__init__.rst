@@ -10,6 +10,7 @@ sub packages and modules
 .. toctree::
     :maxdepth: 1
 
+    aws_ecr <aws_ecr>
     aws_lambda_version_and_alias <aws_lambda_version_and_alias>
     aws_s3_static_website_hosting <aws_s3_static_website_hosting>
     aws_sts <aws_sts>
