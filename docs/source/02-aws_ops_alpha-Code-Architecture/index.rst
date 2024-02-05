@@ -56,8 +56,8 @@ AWS Ops 本质上是一步步的 Step 的排列组合. 而在具体项目中 Ste
 
 - ``gen_code.py``: 在为一个新的 project 类型定义 Conditional Step 之前, 需要在这个模块中定义有哪些 Step, 哪些 branch, 哪些 runtime, 哪些 env_name. 然后运行这个脚本就会自动生成 ``should_we_do_it.tsv`` 模版供开发者进行编辑. 如果你已经编辑好了 ``should_we_do_it.tsv`` 文件, 运行这个脚本则会自动生成 ``${project_type}_truth_table.py`` 和 ``${project_type}_truth_table.py`` 两个文件.
 - ``should_we_do_it.tsv``: 开发者用于本地编辑的文件, 用于定义 Condition 规则. 这个文件不会被 check in 到 Git 中.
-- ``${project_type}_truth_table.tsv``, ``should_we_do_it.tsv`` 的副本, 会被 check in 到 Git 中.
-- ``${project_type}_truth_table.py``, 一个 Python 模块, 提供了一个简洁的 API 用于读取 ``${project_type}_truth_table.tsv`` 文件中的数据, 并根据 condition 的情况决定 step 要不要被执行. 这个模块会被 ``aws_ops_alpha.project.${project_type}.step.py`` 模块使用.
+- ``${project_type}_truth_table.tsv``: ``should_we_do_it.tsv`` 的副本, 会被 check in 到 Git 中.
+- ``${project_type}_truth_table.py``: 一个 Python 模块, 提供了一个简洁的 API 用于读取 ``${project_type}_truth_table.tsv`` 文件中的数据, 并根据 condition 的情况决定 step 要不要被执行. 这个模块会被 ``aws_ops_alpha.project.${project_type}.step.py`` 模块使用.
 - ``rule_set.py``: 对 Condition 的 Enum 做一些自定义的处理. 最终会被 ``aws_ops_alpha.project.${project_type}.step.py`` 模块使用.
 - ``step.py``: 定义了在这种 project 类型中会用到的 Step 的自动化脚本的函数. 这些函数通常会打上一些 Log.
 
