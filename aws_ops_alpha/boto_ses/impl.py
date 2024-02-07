@@ -202,7 +202,10 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
         """
         raise NotImplementedError
 
-    def is_devops_bsm(self, bsm: "BotoSesManager") -> bool:  # pragma: no cover
+    def is_devops_bsm(
+        self,
+        bsm: "BotoSesManager",
+    ) -> bool:  # pragma: no cover
         """
         Check if the boto session manager is for devops AWS account.
         """
@@ -225,7 +228,11 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
         elif self.runtime.is_ci_runtime_group:
             return devops_role_session_name in bsm.principal_arn
 
-    def is_workload_bsm(self, bsm: "BotoSesManager", env_name: str) -> bool:
+    def is_workload_bsm(
+        self,
+        bsm: "BotoSesManager",
+        env_name: str,
+    ) -> bool:  # pragma: no cover
         workload_role_session_name = self.get_env_role_session_name(env_name=env_name)
         if self.runtime.is_local_runtime_group:
             # in cloud9 runtime, check if principal ARN is a workload role session,
