@@ -24,7 +24,7 @@ from ...aws_helpers import aws_chalice_helpers
 from ...rule_set import should_we_do_it
 
 # --- modules from this submodule
-from .simple_lbd_agw_chalice_truth_table import StepEnum, truth_table
+from .simple_lbd_agw_chalice_truth_table import StepEnum, truth_table as tt
 
 # --- type hint
 if T.TYPE_CHECKING:  # pragma: no cover
@@ -40,7 +40,7 @@ if T.TYPE_CHECKING:  # pragma: no cover
 )
 def build_lambda_source_chalice_vendor(
     pyproject_ops: "pyops.PyProjectOps",
-):
+):  # pragma: no cover
     logger.info(
         f"review source artifacts at local: {pyproject_ops.dir_lambda_app_vendor_python_lib}"
     )
@@ -63,16 +63,30 @@ def download_deployed_json(
     s3path_deployed_json: "S3Path",
     check=True,
     step: str = StepEnum.deploy_chalice_app.value,
-    truth_table: T.Optional[tt4human.TruthTable] = truth_table,
+    truth_table: T.Optional[tt4human.TruthTable] = None,
     url: T.Optional[str] = None,
-) -> bool:
+) -> bool:  # pragma: no cover
+    """
+    See :func:`aws_ops_alpha.aws_helpers.aws_chalice_helpers.download_deployed_json`.
+
+    :param semantic_branch_name: semantic branch name for conditional step test.
+    :param runtime_name: runtime name for conditional step test.
+    :param env_name: env name, will be used for conditional step test.
+    :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
+    :param pyproject_ops: ``PyProjectOps`` object.
+    :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
+    :param check: whether to check if we should run this step.
+    :param step: step name for conditional step test.
+    :param truth_table: truth table for conditional step test.
+    :param url: print the Google sheet url when conditional step test failed.
+    """
     if check:
         flag = should_we_do_it(
             step=step,
             semantic_branch_name=semantic_branch_name,
             runtime_name=runtime_name,
             env_name=env_name,
-            truth_table=truth_table,
+            truth_table=tt if truth_table is None else truth_table,
             google_sheet_url=url,
         )
         if flag is False:
@@ -109,16 +123,31 @@ def upload_deployed_json(
     tags: T.Optional[T.Dict[str, str]] = None,
     check=True,
     step: str = StepEnum.deploy_chalice_app.value,
-    truth_table: T.Optional[tt4human.TruthTable] = truth_table,
+    truth_table: T.Optional[tt4human.TruthTable] = None,
     url: T.Optional[str] = None,
-) -> bool:
+) -> bool:  # pragma: no cover
+    """
+    See :func:`aws_ops_alpha.aws_helpers.aws_chalice_helpers.upload_deployed_json`.
+
+    :param semantic_branch_name: semantic branch name for conditional step test.
+    :param runtime_name: runtime name for conditional step test.
+    :param env_name: env name, will be used for conditional step test.
+    :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
+    :param pyproject_ops: ``PyProjectOps`` object.
+    :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
+    :param tags: optional AWS resource tags.
+    :param check: whether to check if we should run this step.
+    :param step: step name for conditional step test.
+    :param truth_table: truth table for conditional step test.
+    :param url: print the Google sheet url when conditional step test failed.
+    """
     if check:
         flag = should_we_do_it(
             step=step,
             semantic_branch_name=semantic_branch_name,
             runtime_name=runtime_name,
             env_name=env_name,
-            truth_table=truth_table,
+            truth_table=tt if truth_table is None else truth_table,
             google_sheet_url=url,
         )
         if flag is False:
@@ -159,7 +188,7 @@ def run_chalice_command(
     bsm_devops: "BotoSesManager",
     bsm_workload: "BotoSesManager",
     pyproject_ops: "pyops.PyProjectOps",
-):
+):  # pragma: no cover
     res = aws_chalice_helpers.run_chalice_command(
         env_name=env_name,
         command=command,
@@ -194,9 +223,11 @@ def get_lock(
     vault: Vault,
     owner: str,
     bsm_devops: "BotoSesManager",
-) -> T.Optional[Lock]:
+) -> T.Optional[Lock]:  # pragma: no cover
     """
-    :return: True if got the lock, False if not
+    Get the concurrency lock.
+
+    :return: True if got the lock, False if not.
     """
     logger.info(f"try to get the concurrency lock ...")
     lock = aws_chalice_helpers.get_concurrency_lock(
@@ -230,9 +261,9 @@ def run_chalice_deploy(
     tags: T.Optional[T.Dict[str, str]] = None,
     check=True,
     step: str = StepEnum.deploy_chalice_app.value,
-    truth_table: T.Optional[tt4human.TruthTable] = truth_table,
+    truth_table: T.Optional[tt4human.TruthTable] = None,
     url: T.Optional[str] = None,
-) -> bool:
+) -> bool:  # pragma: no cover
     """
     Deploy lambda app using chalice.
 
@@ -244,20 +275,20 @@ def run_chalice_deploy(
     4. run ``chalice deploy`` command to deploy the lambda function.
     5. upload the ``lambda_app/.chalice/deployed/${env_name}.json`` file.
 
-    :param semantic_branch_name:
-    :param runtime_name:
-    :param env_name:
+    :param semantic_branch_name: semantic branch name for conditional step test.
+    :param runtime_name: runtime name for conditional step test.
+    :param env_name: env name, will be used for conditional step test.
     :param chalice_app_name: the chalice app name, it will be used as part of the
         lambda function naming convention.
     :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
     :param bsm_workload: the workload AWS Account ``BotoSesManager`` object.
-    :param pyproject_ops:
+    :param pyproject_ops: ``PyProjectOps`` object.
     :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
     :param tags: optional AWS resource tags.
-    :param check: whether to check if we should run chalice deploy command.
-    :param step:
-    :param truth_table:
-    :param url:
+    :param check: whether to check if we should run this step.
+    :param step: step name for conditional step test.
+    :param truth_table: truth table for conditional step test.
+    :param url: print the Google sheet url when conditional step test failed.
 
     :return: a boolean flag to indicate whether it runs ``chalice deploy`` command.
     """
@@ -267,7 +298,7 @@ def run_chalice_deploy(
             semantic_branch_name=semantic_branch_name,
             runtime_name=runtime_name,
             env_name=env_name,
-            truth_table=truth_table,
+            truth_table=tt if truth_table is None else truth_table,
             google_sheet_url=url,
         )
         if flag is False:
@@ -370,9 +401,9 @@ def run_chalice_delete(
     tags: T.Optional[T.Dict[str, str]] = None,
     check=True,
     step: str = StepEnum.deploy_chalice_app.value,
-    truth_table: T.Optional[tt4human.TruthTable] = truth_table,
+    truth_table: T.Optional[tt4human.TruthTable] = None,
     url: T.Optional[str] = None,
-) -> bool:
+) -> bool:  # pragma: no cover
     """
     Delete lambda app using chalice.
 
@@ -383,22 +414,22 @@ def run_chalice_delete(
     3. run ``chalice delete`` command to delete the lambda function.
     4. upload the ``lambda_app/.chalice/deployed/${env_name}.json`` file.
 
-    :param semantic_branch_name:
-    :param runtime_name:
-    :param env_name:
+    :param semantic_branch_name: semantic branch name for conditional step test.
+    :param runtime_name: runtime name for conditional step test.
+    :param env_name: env name, will be used for conditional step test.
     :param chalice_app_name: the chalice app name, it will be used as part of the
         lambda function naming convention.
     :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
     :param bsm_workload: the workload AWS Account ``BotoSesManager`` object.
-    :param pyproject_ops:
+    :param pyproject_ops: ``PyProjectOps`` object.
     :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
     :param tags: optional AWS resource tags.
-    :param check: whether to check if we should run chalice delete command.
-    :param step:
-    :param truth_table:
-    :param url:
+    :param check: whether to check if we should run this step.
+    :param step: step name for conditional step test.
+    :param truth_table: truth table for conditional step test.
+    :param url: print the Google sheet url when conditional step test failed.
 
-    :return: a boolean flag to indicate whether it runs ``chalice deploy`` command.
+    :return: a boolean flag to indicate whether it runs ``chalice delete`` command.
     """
     if check:
         flag = should_we_do_it(
@@ -406,13 +437,15 @@ def run_chalice_delete(
             semantic_branch_name=semantic_branch_name,
             runtime_name=runtime_name,
             env_name=env_name,
-            truth_table=truth_table,
+            truth_table=tt if truth_table is None else truth_table,
             google_sheet_url=url,
         )
         if flag is False:
             return False
 
     # 1. create dummy ``.chalice/config.json`` file.
+    # chalice don't need to know the configuration data to delete, it just needs
+    # this file to locate the app.py location.
     logger.info(f"{Emoji.python} create dummy '.chalice/config.json' ...")
     pyproject_ops.path_chalice_config.write_text(json.dumps({"version": "2.0"}))
 

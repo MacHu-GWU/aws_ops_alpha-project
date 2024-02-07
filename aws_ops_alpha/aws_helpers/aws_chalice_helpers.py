@@ -36,6 +36,8 @@ def build_lambda_source_chalice_vendor(
 
     It also removes the ``__pycache__`` directory and the ``.pyc``, ``.pyo``
     files during the copy.
+
+    :param pyproject_ops: ``PyProjectOps`` object.
     """
     aws_lambda_layer.build_source_python_lib(
         dir_python_lib_source=pyproject_ops.dir_python_lib,
@@ -63,6 +65,8 @@ def get_source_sha256(
     - lambda_app/app.py
     - lambda_app/vendor/${package_name}
 
+    :param pyproject_ops: ``PyProjectOps`` object.
+
     :return: a sha256 hash value represent the local lambda source code
     """
     return hashes.of_paths(
@@ -84,7 +88,7 @@ def is_current_lambda_code_the_same_as_deployed_one(
     Compare the local chalice app source code hash with the deployed one.
 
     :param env_name: the environment name
-    :param bsm_devops: ``BotoSesManager`` session manager object for Dev
+    :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
     :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
     :param source_sha256: a sha256 hash value represent the local lambda source code
 
@@ -102,7 +106,7 @@ def get_concurrency_lock(
     vault: Vault,
     owner: str,
     bsm_devops: "BotoSesManager",
-) -> T.Optional[Lock]:
+) -> T.Optional[Lock]:# pragma: no cover
     """
     Get the concurrency lock.
 
@@ -120,7 +124,7 @@ def download_deployed_json(
     bsm_devops: "BotoSesManager",
     pyproject_ops: "pyops.PyProjectOps",
     s3path_deployed_json: "S3Path",
-) -> bool:
+) -> bool: # pragma: no cover
     """
     AWS Chalice utilizes a ``deployed/${env_name}.json`` JSON file to store
     the deployed resource information.
@@ -134,9 +138,9 @@ def download_deployed_json(
 
     Naturally, we employ a concurrency lock mechanism to prevent competition.
 
-    :param env_name:
-    :param bsm_devops:
-    :param pyproject_ops:
+    :param env_name: the environment name
+    :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
+    :param pyproject_ops: ``PyProjectOps`` object.
     :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
 
     :return: a boolean flag to indicate that if the deployed JSON exists on S3
@@ -170,9 +174,9 @@ def upload_deployed_json(
     2. ``${s3dir_artifacts}/lambda/deployed/${env_name}-${datetime}.json``, this
         file will stay forever as a backup
 
-    :param env_name:
-    :param bsm_devops:
-    :param pyproject_ops:
+    :param env_name: env name, will be used for conditional step test.
+    :param bsm_devops: the devops AWS Account ``BotoSesManager`` object.
+    :param pyproject_ops: ``PyProjectOps`` object.
     :param s3path_deployed_json: the S3 path to the deployed ``${env_name}.json`` file.
     :param source_sha256: a sha256 hash value represent the lambda source code digest.
         if not provided, it will be calculated from the source code.

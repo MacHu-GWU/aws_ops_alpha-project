@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 """
-
+See :class:`AbstractBotoSesFactory`.
 """
 
 import typing as T
 import abc
-import json
 import dataclasses
 from pathlib import Path
 from functools import cached_property
@@ -203,7 +202,7 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
         """
         raise NotImplementedError
 
-    def is_devops_bsm(self, bsm: "BotoSesManager") -> bool:
+    def is_devops_bsm(self, bsm: "BotoSesManager") -> bool:  # pragma: no cover
         """
         Check if the boto session manager is for devops AWS account.
         """
@@ -274,7 +273,9 @@ class AlphaBotoSesFactory(AbstractBotoSesFactory):
                 else:
                     return BotoSesManager.from_snapshot_file(path=path_bsm_snapshot)
             else:
-                profile_name = self.env_to_profile_mapper[CommonEnvNameEnum.devops.value]
+                profile_name = self.env_to_profile_mapper[
+                    CommonEnvNameEnum.devops.value
+                ]
                 kwargs = dict(profile_name=profile_name)
                 if self.aws_region:
                     kwargs["region_name"] = self.aws_region
