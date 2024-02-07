@@ -53,6 +53,8 @@ Welcome to ``aws_ops_alpha`` Documentation
 .. image:: https://aws-ops-alpha.readthedocs.io/en/latest/_static/aws_ops_alpha-logo.png
     :target: https://aws-ops-alpha.readthedocs.io/en/latest/
 
+A devops best practices for AWS projects. Designed for production-ready, multi-environments deployment projects.
+
 
 .. _install:
 
