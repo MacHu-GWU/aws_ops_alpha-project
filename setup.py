@@ -114,7 +114,7 @@ if __name__ == "__main__":
     CLASSIFIERS = [
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
         "Natural Language :: English",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: MacOS",
@@ -182,13 +182,9 @@ if __name__ == "__main__":
         classifiers=CLASSIFIERS,
         platforms=PLATFORMS,
         license=LICENSE,
+        python_requires=">=3.8",
         install_requires=REQUIRES,
         extras_require=EXTRA_REQUIRE,
-        entry_points={
-            "console_scripts": [
-                "aws_ops_alpha=aws_ops_alpha.cli:main",
-            ],
-        },
     )
 
 """
@@ -238,11 +234,11 @@ Frequent used classifiers List::
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 2 :: Only",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3 :: Only",
     ]
 """
