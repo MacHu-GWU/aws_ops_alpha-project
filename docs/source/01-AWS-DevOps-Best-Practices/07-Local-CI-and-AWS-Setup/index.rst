@@ -166,7 +166,7 @@ CodeBuild 的权限来自于它的 IAM Role. 所以我们只需要在 Devops 上
 
 
 Non AWS CI/CD Tools Setup
-------------------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 这一类的 CI 系统的 AWS 权限管理策略都是类似的. 基本上都是在 CI 系统中配置好 DevOps Account 的 IAM Principal 权限, 然后再 workload account 上创建好对应的 IAM Role 并允许 DevOps Account 的 IAM Principal 能够 assume 它们.
 
 而配置 DevOps Account 的 IAM Principal 的方式大体分为两种:
