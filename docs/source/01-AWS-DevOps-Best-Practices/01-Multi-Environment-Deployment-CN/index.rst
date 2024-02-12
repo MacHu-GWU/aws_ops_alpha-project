@@ -17,6 +17,8 @@ Overview
 本文我们来详细讨论跟 Multi Environment 相关的一些话题.
 
 
+.. _cross-environment-access-control:
+
 Cross Environment Access Control
 ------------------------------------------------------------------------------
 如前面所说, DevOps 环境是用来跑 CI/CD 的自动化代码的, 以及上传部署所用到的 Artifacts. 而部署的任务则是把 App 部署到 Workload 环境中. 这就意味着 DevOps 环境要有对 Workload 环境中的资源进行部署的能力. 这一点通常用 assume role 技术解决, 让 DevOps 上的 Role assume Workload 上有部署权限的 Role. 这个 Role 我们叫做 Deployer Role. 以后提到 Deployer Role 就暗指这个 Role 是指位于 Workload Account 中的. Deployer Role 也要有能从 DevOps Account 中获取部署所需的 Artifacts 的权限. 这个权限通常是通过 Resource Policy 实现的. 在 DevOps 环境中创建用于 Host Deployment Artifacts 的资源的时候, 用 Resource Policy 显式地给 Workload AWS Account 或是 Deployer Role 读权限. 一些常见的例子有 S3 Bucket Resource Policy (参考 `Bucket owner granting cross-account bucket permissions <https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-walkthroughs-managing-access-example2.html>`_), ECR Repository Policy (参考 `Private repository policies <https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policies.html>`_, `How can I allow a secondary account to push or pull images in my Amazon ECR image repository? <https://repost.aws/knowledge-center/secondary-account-access-ecr>`_, AWS Secret Manager Policy (参考 `Permissions to AWS Secrets Manager secrets for users in a different account <https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_examples_cross.html>`_) 等等.

@@ -12,6 +12,7 @@ sub packages and modules
 
     simple_cdk <simple_cdk/__init__>
     simple_config <simple_config/__init__>
+    simple_glue <simple_glue/__init__>
     simple_lambda <simple_lambda/__init__>
     simple_lbd_agw_chalice <simple_lbd_agw_chalice/__init__>
     simple_lbd_container <simple_lbd_container/__init__>

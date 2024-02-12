@@ -190,9 +190,33 @@ Conditional Step 的判定逻辑主要由前面的 :mod:`aws_ops_alpha.rule_set`
 Logging 主要是在执行某一个动作之前打上日志, 告诉用户我要做什么了. 然后根据执行的结果, 是成功还是失败, 有哪些用户需要知道的信息, 把这些信息打到日志上. 因为所有的 logging 都是由一个叫 logger 的对象来实现的, 所以我们可以用 ``logger.disable()`` context manager 在任何地方临时禁用 logging (例如在单元测试时我们不需要打 log, 不然 test output 会很乱).
 
 
+``aws_ops_alpha/project/simple_python`` Folder
+------------------------------------------------------------------------------
+
+
+``aws_ops_alpha/project/simple_config`` Folder
+------------------------------------------------------------------------------
+
+
+``aws_ops_alpha/project/simple_cdk`` Folder
+------------------------------------------------------------------------------
+
+
 ``aws_ops_alpha/project/simple_lambda`` Folder
 ------------------------------------------------------------------------------
 
 
+``aws_ops_alpha/project/simple_lbd_container`` Folder
+------------------------------------------------------------------------------
+
+
+``aws_ops_alpha/project/simple_lbd_agw_chalice`` Folder
+------------------------------------------------------------------------------
+
+
 ``aws_ops_alpha/project/simple_glue`` Folder
+------------------------------------------------------------------------------
+
+
+``aws_ops_alpha/project/simple_sfn`` Folder
 ------------------------------------------------------------------------------

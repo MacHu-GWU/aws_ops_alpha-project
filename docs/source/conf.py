@@ -247,5 +247,6 @@ docfly.ApiReferenceDoc(
         # "%s.vendor" % package_name,
         "%s._version" % package_name,
         "%s.paths" % package_name,
+        "%s.aws_helpers._build_layer_in_container" % package_name,
     ]
 ).fly()

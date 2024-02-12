@@ -26,8 +26,7 @@ Why I Recommend Monorepo
 
 Tricks - Manage Monorepo in IDE
 ------------------------------------------------------------------------------
-很多 IDE 都支持对代码库进行分析, 使得开发者能在各种函数定义和引用中互相跳转, 以及搜索整个代码库. 而使用 Monorepo 的话就会使得整个代码库变得庞大, 这样很多搜索操作就会很慢. 但这其实不是问题. 例如 PyCharm 支持将指定的 Folder 设为当前活跃项目, 将指定 Folder 设为 Ignore (`Controlling source, library and exclude directories <https://www.jetbrains.com/help/objc/controlling-source-library-and-exclude-directories.html>`_). VSCode 支持在 Settings 设定 ``search.exclude`` (`Settings precedence
- <https://code.visualstudio.com/docs/getstarted/settings#_settings-precedence>`_), 以及有一个插件 `Explorer Exclude <https://marketplace.visualstudio.com/items?itemName=PeterSchmalfeldt.explorer-exclude>`_ 可以使用户更容易做到这一点.
+很多 IDE 都支持对代码库进行分析, 使得开发者能在各种函数定义和引用中互相跳转, 以及搜索整个代码库. 而使用 Monorepo 的话就会使得整个代码库变得庞大, 这样很多搜索操作就会很慢. 但这其实不是问题. 例如 PyCharm 支持将指定的 Folder 设为当前活跃项目, 将指定 Folder 设为 Ignore (`Controlling source, library and exclude directories <https://www.jetbrains.com/help/objc/controlling-source-library-and-exclude-directories.html>`_). VSCode 支持在 Settings 设定 ``search.exclude`` (`Settings precedence <https://code.visualstudio.com/docs/getstarted/settings#_settings-precedence>`_), 以及有一个插件 `Explorer Exclude <https://marketplace.visualstudio.com/items?itemName=PeterSchmalfeldt.explorer-exclude>`_ 可以使用户更容易做到这一点.
 
 
 Tricks - Git Branch in Monorepo

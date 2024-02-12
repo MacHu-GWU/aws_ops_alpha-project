@@ -18,6 +18,7 @@ from aws_ops_alpha.rule_set import ConditionEnum, SHOULD_WE_DO_IT
 
 project_name = "simple_lambda"
 
+
 # 1. Define enum of ``conditions``
 conditions = {
     ConditionEnum.step.value: [

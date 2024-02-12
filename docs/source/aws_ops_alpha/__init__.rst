@@ -20,7 +20,6 @@ sub packages and modules
     runtime <runtime/__init__>
     vendor <vendor/__init__>
     api <api>
-    cli <cli>
     constants <constants>
     env_var <env_var>
     logger <logger>
