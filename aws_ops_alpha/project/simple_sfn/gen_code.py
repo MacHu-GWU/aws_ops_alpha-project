@@ -9,14 +9,14 @@ The declaration workflow are:
 3. Manually update the truth table data.
 4. Generate the ``${project_name}_truth_table.py`` Python module.
 
-https://docs.google.com/spreadsheets/d/1OI3GXTUBtAbMyaLSnh_1S1X0jfTCBaFPIJLeRoP_uAY/edit#gid=238125239
+https://docs.google.com/spreadsheets/d/1OI3GXTUBtAbMyaLSnh_1S1X0jfTCBaFPIJLeRoP_uAY/edit#gid=1016835843
 """
 
 from pathlib import Path
 import tt4human.api as tt4human
 from aws_ops_alpha.rule_set import ConditionEnum, SHOULD_WE_DO_IT
 
-project_name = "simple_lambda"
+project_name = "simple_sfn"
 
 # 1. Define enum of ``conditions``
 conditions = {
@@ -31,7 +31,7 @@ conditions = {
         "PUBLISH_LAMBDA_LAYER",
         "DEPLOY_CDK_STACK",
         "RUN_INTEGRATION_TEST",
-        "PUBLISH_NEW_LAMBDA_VERSION",
+        "PUBLISH_NEW_STATE_MACHINE_VERSION",
         "CREATE_ARTIFACT_SNAPSHOT",
         "CREATE_GIT_TAG",
         "DELETE_CDK_STACK",

@@ -1,4 +1,6 @@
-Local, CI and AWS Setup
+.. _local-ci-and-aws-setup-cn:
+
+Local, CI and AWS Setup (CN)
 ==============================================================================
 
 

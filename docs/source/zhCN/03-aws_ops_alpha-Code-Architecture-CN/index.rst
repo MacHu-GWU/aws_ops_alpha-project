@@ -1,4 +1,4 @@
-aws_ops_alpha Code Architecture
+aws_ops_alpha Code Architecture (CN)
 ==============================================================================
 本节我们将介绍 aws_ops_alpha 的源代码架构. 我们将按照模块在一个 AWS 项目生命周期内被使用到的先后顺序来介绍, 而不是按照字母顺序排列.
 

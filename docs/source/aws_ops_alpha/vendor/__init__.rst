@@ -14,6 +14,7 @@ sub packages and modules
     aws_lambda_version_and_alias <aws_lambda_version_and_alias>
     aws_s3_lock <aws_s3_lock>
     aws_s3_static_website_hosting <aws_s3_static_website_hosting>
+    aws_stepfunction_version_and_alias <aws_stepfunction_version_and_alias>
     aws_sts <aws_sts>
     better_enum <better_enum>
     better_pathlib <better_pathlib>

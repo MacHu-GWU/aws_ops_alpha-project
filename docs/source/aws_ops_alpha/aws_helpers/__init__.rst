@@ -16,6 +16,7 @@ sub packages and modules
     aws_ecr_helpers <aws_ecr_helpers>
     aws_glue_helpers <aws_glue_helpers>
     aws_lambda_helpers <aws_lambda_helpers>
+    aws_sfn_helpers <aws_sfn_helpers>
     python_helpers <python_helpers>
     rich_helpers <rich_helpers>
     

@@ -17,5 +17,6 @@ sub packages and modules
     simple_lbd_agw_chalice <simple_lbd_agw_chalice/__init__>
     simple_lbd_container <simple_lbd_container/__init__>
     simple_python <simple_python/__init__>
+    simple_sfn <simple_sfn/__init__>
     api <api>
     

@@ -13,10 +13,14 @@ Built in Rule Set
 
 .. jinja:: doc_data
 
-    {% for list_table in doc_data.truth_table_list_table_list %}
-    .. dropdown:: {{ list_table.title }}
+    {% for project in doc_data.project_list %}
+    .. _{{ project.project_type }}-rule-set-cn:
 
-    {{ list_table.render(indent=1) }}
+    {{ project.project_type }} Rule Set
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    .. dropdown:: {{ project.truth_table_list_table.title }}
+
+    {{ project.truth_table_list_table.render(indent=1) }}
     {% endfor %}
 
 
@@ -34,7 +38,7 @@ Define Your Custom Rule Set
 
 .. dropdown:: aws_ops_alpha/project/simple_lambda/gen_code.py
 
-    .. literalinclude:: ../../../../aws_ops_alpha/project/simple_lambda/gen_code.py
+    .. literalinclude:: ../../../../../aws_ops_alpha/project/simple_lambda/gen_code.py
        :language: python
        :linenos:
 
@@ -43,7 +47,7 @@ Define Your Custom Rule Set
 
 .. dropdown:: aws_ops_alpha/project/simple_lambda/should_we_do_it.tsv
 
-    .. literalinclude:: ../../../../aws_ops_alpha/project/simple_lambda/simple_lambda_truth_table.tsv
+    .. literalinclude:: ../../../../../aws_ops_alpha/project/simple_lambda/simple_lambda_truth_table.tsv
        :language: csv
        :linenos:
 
@@ -51,7 +55,7 @@ Define Your Custom Rule Set
 
 .. dropdown:: aws_ops_alpha/project/simple_lambda/simple_lambda_truth_table.py
 
-    .. literalinclude:: ../../../../aws_ops_alpha/project/simple_lambda/simple_lambda_truth_table.py
+    .. literalinclude:: ../../../../../aws_ops_alpha/project/simple_lambda/simple_lambda_truth_table.py
        :language: python
        :linenos:
 
@@ -59,7 +63,7 @@ Define Your Custom Rule Set
 
 .. dropdown:: aws_ops_alpha/project/simple_lambda/rule_set.py
 
-    .. literalinclude:: ../../../../aws_ops_alpha/project/simple_lambda/rule_set.py
+    .. literalinclude:: ../../../../../aws_ops_alpha/project/simple_lambda/rule_set.py
        :language: csv
        :linenos:
 
@@ -73,25 +77,23 @@ Define Your Custom Rule Set
     {% for project in doc_data.project_list %}
     .. dropdown:: {{ project.project_type }}/gen_code.py
 
-        .. literalinclude:: ../../../../aws_ops_alpha/project/{{ project.project_type }}/gen_code.py
+        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/gen_code.py
            :language: python
            :linenos:
 
     .. dropdown:: {{ project.project_type }}/{{ project.project_type }}_truth_table.py
 
-        .. literalinclude:: ../../../../aws_ops_alpha/project/{{ project.project_type }}/{{ project.project_type }}_truth_table.py
+        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/{{ project.project_type }}_truth_table.py
            :language: python
            :linenos:
 
     .. dropdown:: {{ project.project_type }}/{{ project.project_type }}_truth_table.tsv
 
-        .. literalinclude:: ../../../../aws_ops_alpha/project/{{ project.project_type }}/{{ project.project_type }}_truth_table.tsv
-           :language: csv
-           :linenos:
+    {{ project.truth_table_list_table.render(indent=1) }}
 
     .. dropdown:: {{ project.project_type }}/rule_set.py
 
-        .. literalinclude:: ../../../../aws_ops_alpha/project/{{ project.project_type }}/rule_set.py
+        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/rule_set.py
            :language: python
            :linenos:
     {% endfor %}
