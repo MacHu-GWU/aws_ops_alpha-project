@@ -7,20 +7,49 @@ Rule Set Code Recipe (CN)
 之前我们介绍了我们可以通过维护一个 Truth Table 表格来判断在某种 Condition 的情况下, 是否要执行某个 DevOps Step.
 
 
-Built in Rule Set
+``aws_ops_alpha`` Built in Rule Set
 --------------------------------------------------------------------------------
-下面我们列出了 ``aws_ops_alpha`` 项目中内置的一些服务于不同类型的项目的 Rule Set.
+下面我们列出了 ``aws_ops_alpha`` 项目中内置的一些服务于不同类型的项目的 Rule Set. 这些 Rule Set 都是作者在生产项目实践中总结出来的最佳实践. 不过你可以根据自己的项目实际情况来修改这些 Rule Set.
 
 .. jinja:: doc_data
 
     {% for project in doc_data.project_list %}
-    .. _{{ project.project_type }}-rule-set-cn:
-
     {{ project.project_type }} Rule Set
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    .. dropdown:: {{ project.truth_table_list_table.title }}
+
+
+    {{ project.project_type }}/gen_code.py
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    .. dropdown:: {{ project.project_type }}/gen_code.py
+
+        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/gen_code.py
+           :language: python
+           :linenos:
+
+
+    {{ project.project_type }}/{{ project.project_type }}_truth_table.py
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    .. dropdown:: {{ project.project_type }}/{{ project.project_type }}_truth_table.py
+
+        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/{{ project.project_type }}_truth_table.py
+           :language: python
+           :linenos:
+
+
+    {{ project.project_type }}/{{ project.project_type }}_truth_table.tsv
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    .. dropdown:: {{ project.project_type }}/{{ project.project_type }}_truth_table.tsv
 
     {{ project.truth_table_list_table.render(indent=1) }}
+
+
+    {{ project.project_type }}/rule_set.py
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    .. dropdown:: {{ project.project_type }}/rule_set.py
+
+        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/rule_set.py
+           :language: python
+           :linenos:
     {% endfor %}
 
 
@@ -68,32 +97,3 @@ Define Your Custom Rule Set
        :linenos:
 
 至此, 你可以 import ``rule_set.py`` 和 ``simple_lambda_truth_table.py`` 模块来进行 DevOps Step 的条件判断了.
-
-
-``aws_ops_alpha`` Built in Rule Set
-------------------------------------------------------------------------------
-.. jinja:: doc_data
-
-    {% for project in doc_data.project_list %}
-    .. dropdown:: {{ project.project_type }}/gen_code.py
-
-        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/gen_code.py
-           :language: python
-           :linenos:
-
-    .. dropdown:: {{ project.project_type }}/{{ project.project_type }}_truth_table.py
-
-        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/{{ project.project_type }}_truth_table.py
-           :language: python
-           :linenos:
-
-    .. dropdown:: {{ project.project_type }}/{{ project.project_type }}_truth_table.tsv
-
-    {{ project.truth_table_list_table.render(indent=1) }}
-
-    .. dropdown:: {{ project.project_type }}/rule_set.py
-
-        .. literalinclude:: ../../../../../aws_ops_alpha/project/{{ project.project_type }}/rule_set.py
-           :language: python
-           :linenos:
-    {% endfor %}
