@@ -15,6 +15,22 @@ x.y.z (Backlog)
 **Miscellaneous**
 
 
+0.2.1 (TBD)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- Add the following API to allow configuring github settings automatically.
+    - ``aws_ops_alpha.bootstrap.github_action.WorkloadAccountBotoSesManagerSetup``
+    - ``aws_ops_alpha.bootstrap.github_action.setup_github_repository_settings``
+    - ``aws_ops_alpha.bootstrap.github_action.teardown_github_repository_settings``
+
+**Minor Improvements**
+
+**Bugfixes**
+
+**Miscellaneous**
+
+
 0.1.1 (2024-02-07)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - First usable release
