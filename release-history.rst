@@ -15,7 +15,7 @@ x.y.z (Backlog)
 **Miscellaneous**
 
 
-0.2.1 (TBD)
+0.2.1 (2024-06-25)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -23,12 +23,9 @@ x.y.z (Backlog)
     - ``aws_ops_alpha.bootstrap.github_action.WorkloadAccountBotoSesManagerSetup``
     - ``aws_ops_alpha.bootstrap.github_action.setup_github_repository_settings``
     - ``aws_ops_alpha.bootstrap.github_action.teardown_github_repository_settings``
-
-**Minor Improvements**
-
-**Bugfixes**
-
-**Miscellaneous**
+- Add support for the following project type:
+    - ``simple_glue``
+    - ``simple_sfn``
 
 
 0.1.1 (2024-02-07)
